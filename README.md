@@ -1,4 +1,10 @@
-# Virtusa GitHub Workspace
+<p align="center">
+   <img src="Assets/obseve-logo.png" alt="Platform Logo" style="border-radius: 16px;" width="320" />
+</p>
+
+
+
+# AI PROCTORING AND EXAMINATION PLATFORM WORKSPACE
 
 Central monorepo for a proctored assessment platform with web and desktop clients, adaptive test generation, code execution sandboxing, report rendering, and report publishing.
 
@@ -234,3 +240,9 @@ Test-Path "EXE-Application/.env"
 ```
 
 If any command returns `False`, copy from `.env.example` and set real values before running.
+
+
+## EXE - APPLICATION LINK
+
+- Download EXE: [Google Drive Link](https://drive.google.com/file/d/1t6lMF2YBEF8WOVlN90k4zm10z7LF2Np5/view?usp=drive_link)
+
