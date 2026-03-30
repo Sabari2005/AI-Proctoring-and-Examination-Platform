@@ -1,0 +1,13 @@
+﻿{
+  "section": "Programming",
+  "question": "Which of the following are built-in Python data types? Select ALL that apply.",
+  "options": ["list", "dict", "array", "tuple", "pointer", "set"],
+  "correct_answers": ["list", "dict", "tuple", "set"],
+  "partial_credit": true,
+  "morph_config": {
+    "strategies": ["msq_contextual"],
+    "variant_count": 1,
+    "target_difficulty": 3,
+    "bloom_target": "apply"
+  }
+}

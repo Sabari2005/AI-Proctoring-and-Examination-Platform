@@ -1,0 +1,19 @@
+﻿{
+  "section": "Computer Science",
+  "question": "Explain the difference between RAM and ROM in two sentences.",
+  "model_answer": "RAM is volatile memory that temporarily stores data while a computer is running. ROM is non-volatile memory that permanently stores firmware and cannot be modified during normal operation.",
+  "keywords": ["volatile", "non-volatile", "temporary", "permanent", "firmware"],
+  "min_words": 15,
+  "max_words": 60,
+  "grading_rubric": {
+    "keywords_required": 2,
+    "marks": 10
+  },
+  "difficulty": 3,
+  "morph_config": {
+    "strategies": ["short_keyword_shift"],
+    "variant_count": 1,
+    "target_difficulty": 4,
+    "bloom_target": "analyze"
+  }
+}

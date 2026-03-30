@@ -1,0 +1,13 @@
+﻿{
+  "section": "General Knowledge",
+  "question": "The capital of France is ________, which is also its largest city.",
+  "blank_positions": [5],
+  "correct_answers": ["Paris"],
+  "answer_tolerance": "case_insensitive",
+  "morph_config": {
+    "strategies": ["fib_rephrase"],
+    "variant_count": 1,
+    "target_difficulty": 2,
+    "bloom_target": "understand"
+  }
+}

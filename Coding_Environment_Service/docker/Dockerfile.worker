@@ -1,0 +1,22 @@
+FROM python:3.11-slim-bookworm
+
+WORKDIR /app
+
+# Docker CLI needed to spawn sandbox containers
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev docker.io \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app/ ./app/
+COPY questions/ ./questions/
+
+# Worker needs docker socket access — stays as root for socket group
+# In prod: add user to docker group instead
+
+CMD ["celery", "-A", "app.workers.celery_app", "worker", \
+     "--loglevel=info", "--concurrency=4", \
+     "--queues=submissions,default", \
+     "--max-tasks-per-child=100"]

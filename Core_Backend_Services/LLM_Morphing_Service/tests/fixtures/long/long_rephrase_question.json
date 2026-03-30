@@ -1,0 +1,42 @@
+﻿{
+  "section": "History",
+  "question": "Discuss the impact of the Industrial Revolution on urban development in 19th century Europe. Your answer should address at least 3 key areas.",
+  "rubric": {
+    "points": [
+      {
+        "point": "Urbanisation and rural-to-urban migration",
+        "marks": 25,
+        "keywords": ["migration", "urban growth", "population"]
+      },
+      {
+        "point": "Infrastructure development (railways, roads, sanitation)",
+        "marks": 25,
+        "keywords": ["infrastructure", "railways", "sanitation"]
+      },
+      {
+        "point": "Social class changes and labour conditions",
+        "marks": 25,
+        "keywords": ["working class", "labour", "factory"]
+      },
+      {
+        "point": "Environmental and public health impact",
+        "marks": 25,
+        "keywords": ["pollution", "health", "living conditions"]
+      }
+    ],
+    "total_marks": 100,
+    "min_areas": 3
+  },
+  "word_limit": {
+    "min": 400,
+    "max": 800
+  },
+  "requires_examples": true,
+  "difficulty": 4,
+  "morph_config": {
+    "strategies": ["long_rephrase"],
+    "variant_count": 1,
+    "target_difficulty": 4,
+    "bloom_target": "analyze"
+  }
+}

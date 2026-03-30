@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Exam Report — {{ candidate.full_name }}</title>
+  <link rel="stylesheet" href="/static/report.css" />
+</head>
+
+<body>
+  {% set display_name = candidate.full_name | smart_title %}
+  {% set display_org = exam.company_name | smart_title %}
+  {% set display_country = candidate.country | smart_title %}  <!-- ═══════════════════════════════════════════════
+       PAGE 1: COVER
+  ═══════════════════════════════════════════════ -->
+  <div class="page cover-page">
+    <div class="cover-header">
+      <div class="cover-top-logo"></div>
+      <div class="cover-header-main">
+        <div class="cover-logo-area">
+          <div>
+            <div class="org-name">{{ display_org }}</div>
+            <div class="org-email">{{ exam.organization_email }}</div>
+          </div>
+        </div>
+        <div class="report-label">EXAM ASSESSMENT REPORT</div>
+      </div>
+    </div>
+
+    <div class="cover-body">
+      <div class="candidate-card">
+        <div class="candidate-photo-wrap">
+          {% if candidate.photo_b64 %}
+          <img class="candidate-photo" src="{{ candidate.photo_b64 }}" alt="Candidate Photo" />
+          {% elif candidate.photo_url %}
+          <img class="candidate-photo" src="{{ candidate.photo_url }}" alt="Candidate Photo" />
+          {% else %}
+          <div class="candidate-photo-placeholder">{{ (display_name or "U")[:1] | upper }}</div>
+          {% endif %}
+        </div>
+        <div class="candidate-info">
+          <div class="candidate-name">{{ display_name }}</div>
+          <div class="candidate-meta-row">
+            <span class="meta-label">Email</span>
+            <span class="meta-value">{{ candidate.email }}</span>
+          </div>
+          <div class="candidate-meta-row">
+            <span class="meta-label">Mobile</span>
+            <span class="meta-value">{{ candidate.mobile }}</span>
+          </div>
+          <div class="candidate-meta-row">
+            <span class="meta-label">Country</span>
+            <span class="meta-value">{{ display_country }}</span>
+          </div>
+          <div class="candidate-meta-row">
+            <span class="meta-label">Experience</span>
+            <span class="meta-value">{{ candidate.years_of_experience }} years</span>
+          </div>
+          <div class="candidate-meta-row">
+            <span class="meta-label">Timezone</span>
+            <span class="meta-value">{{ candidate.timezone }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- High-level Assessment Summary -->
+      <div class="attempt-summary-row">
+        <div class="attempt-stat">
+          <div class="stat-label">Score Earned</div>
+          <div class="stat-value">{{ attempt.total_marks_earned }} <span class="stat-sub">/ {{ (attempt.jit_exam_max_marks if attempt.has_jit else (attempt.llm_total_marks or exam.max_marks)) or 'N/A' }}</span></div>
+        </div>
+        <div class="attempt-stat">
+          <div class="stat-label">Final Result</div>
+          <div class="stat-value stat-{{ attempt.result | lower }}">{{ attempt.result }}</div>
+        </div>
+        <div class="attempt-stat">
+          <div class="stat-label">Proctoring Alerts</div>
+          <div class="stat-value {{ 'stat-warn' if proctoring.total_alerts > 0 else 'stat-ok' }}">{{ proctoring.total_alerts }}</div>
+        </div>
+      </div>
+
+      <div class="exam-card">
+        <div class="exam-title">{{ exam.title }}</div>
+        {% if exam.description %}
+        <div class="exam-desc">{{ exam.description }}</div>
+        {% endif %}
+        <div class="exam-section-label">EXAM DETAILS</div>
+        <div class="exam-meta-grid">
+          <div class="exam-meta-item">
+            <div class="em-label">Exam Type</div>
+            <div class="em-value">{{ exam.exam_type }}</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Exam Date</div>
+            <div class="em-value">{{ exam.exam_date }}</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Duration</div>
+            <div class="em-value">{{ exam.duration_minutes }} mins</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Max Marks</div>
+            <div class="em-value">{{ (attempt.jit_exam_max_marks if attempt.has_jit else exam.max_marks) or 'N/A' }}</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Mode</div>
+            <div class="em-value">{{ mode | upper }}</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Eligibility</div>
+            <div class="em-value">{{ exam.eligibility }}</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Max Attempts</div>
+            <div class="em-value">{{ exam.max_attempts }}</div>
+          </div>
+          <div class="exam-meta-item">
+            <div class="em-label">Validity</div>
+            <div class="em-value">{{ exam.start_date }} to {{ exam.end_date }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verdict banner -->
+      {% if ai_summary %}
+      <div class="verdict-banner verdict-{{ ai_summary.verdict | lower | replace(' ', '-') }}">
+        <div class="verdict-label">AI RECOMMENDATION</div>
+        <div class="verdict-text">{{ ai_summary.verdict }}</div>
+        <div class="verdict-conf">Confidence: {{ ai_summary.confidence_score }}%</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="cover-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+  </div>
+
+
+
+  <!-- ═══════════════════════════════════════════════
+     PAGE 2: SCORE SUMMARY
+═══════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-logo"></div>
+      <span class="page-candidate">{{ display_name }} · Drive #{{ exam.drive_id }}</span>
+    </div>
+    <div class="content-title">Score Summary</div>
+
+    <!-- Attempt overview -->
+    <div class="summary-grid">
+      <div class="summary-card sc-blue">
+        <div class="sc-value">{{ attempt.total_marks_earned }}</div>
+        <div class="sc-label">Marks Earned</div>
+      </div>
+      <div class="summary-card sc-gray">
+        <div class="sc-value">{{ (attempt.jit_exam_max_marks if attempt.has_jit else (attempt.llm_total_marks or exam.max_marks)) or 'N/A' }}</div>
+        <div class="sc-label">Total Marks</div>
+      </div>
+      <div class="summary-card sc-{{ 'green' if attempt.result == 'PASS' else 'red' }}">
+        <div class="sc-value">{{ attempt.result }}</div>
+        <div class="sc-label">Overall Result</div>
+      </div>
+      <div class="summary-card sc-purple">
+        <div class="sc-value">{{ attempt.attempt_id }}</div>
+        <div class="sc-label">Attempt ID</div>
+      </div>
+    </div>
+
+    <!-- Attempt Details & Timeline -->
+    <div class="section-box">
+      <div class="section-box-title">Attempt Timeline & Status</div>
+      <table class="info-table">
+        <tr>
+          <td class="it-label">Started At</td>
+          <td>{{ attempt.start_time[:19].replace("T", " ") if attempt.start_time else 'N/A' }} UTC</td>
+          <td class="it-label">Finished At</td>
+          <td>{{ attempt.end_time[:19].replace("T", " ") ~ ' UTC' if attempt.end_time else 'In Progress' }}</td>
+        </tr>
+        <tr>
+          <td class="it-label">Completion Status</td>
+          <td>
+            <span style="font-weight: 700; color: {% if attempt.status == 'submitted' %}var(--green){% else %}var(--amber){% endif %};">
+              {{ attempt.status | title }}
+            </span>
+          </td>
+          <td class="it-label">Proctoring Flags</td>
+          <td>{{ proctoring.total_alerts }} Alert(s)</td>
+        </tr>
+        {% if attempt.llm_effective_question_count is not none %}
+        <tr>
+          <td class="it-label">Morphed Generations</td>
+          <td>{{ attempt.llm_effective_question_count }} Questions</td>
+          <td class="it-label">Original Baseline</td>
+          <td>{{ attempt.llm_raw_question_count }} Base Questions</td>
+        </tr>
+        {% endif %}
+      </table>
+    </div>
+
+    <!-- LLM Morphing Section Breakdown -->
+    {% if attempt.llm_section_breakdown %}
+    <div class="section-box">
+      <div class="section-box-title">LLM Morphed Section Analysis</div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Module Name</th>
+            <th style="text-align: center;">Morphed Question Count</th>
+            <th style="text-align: right;">Marks Obtained / Max</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sec in attempt.llm_section_breakdown %}
+          <tr>
+            <td>
+              <div style="font-weight: 600; color: var(--blue);">{{ sec.section_title }}</div>
+              <div style="font-size: 8pt; color: var(--text-sm); margin-top: 2px;">ID: {{ sec.section_id }}</div>
+            </td>
+            <td style="text-align: center;">
+              <span class="skill-badge" style="background: #f1f5f9; color: var(--text);">
+                {{ sec.effective_morphed_question_count }} <span style="color: var(--text-sm); font-weight: 400;">/ {{ sec.raw_morphed_question_count }}</span>
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <span style="font-weight: 700;">{{ sec.llm_morphed_marks }}</span> 
+              <span style="color: var(--text-sm);">/ {{ sec.llm_morphed_total_marks }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <!-- Score breakdown -->
+    <div class="section-box">
+      <div class="section-box-title">Detailed Score Breakdown</div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Question Modality</th>
+            <th>Marks Awarded</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if attempt.breakdown.regular_marks > 0 %}
+          <tr>
+            <td>Standard Pre-Authored Questions</td>
+            <td>{{ attempt.breakdown.regular_marks }}</td>
+          </tr>
+          {% endif %}
+          {% if attempt.breakdown.llm_morphed_marks > 0 %}
+          <tr>
+            <td>Dynamic LLM Morphed Questions</td>
+            <td>{{ attempt.breakdown.llm_morphed_marks }}</td>
+          </tr>
+          {% endif %}
+          {% if attempt.breakdown.jit_marks > 0 %}
+          <tr>
+            <td>Adaptive JIT Generative Prompts</td>
+            <td>{{ attempt.breakdown.jit_marks }}</td>
+          </tr>
+          {% endif %}
+          {% if attempt.breakdown.coding_marks > 0 %}
+          <tr>
+            <td>Practical Coding Challenges</td>
+            <td>{{ attempt.breakdown.coding_marks }}</td>
+          </tr>
+          {% endif %}
+          
+          {% if attempt.breakdown.regular_marks == 0 and attempt.breakdown.llm_morphed_marks == 0 and attempt.breakdown.jit_marks == 0 and attempt.breakdown.coding_marks == 0 %}
+          <tr>
+            <td colspan="2" style="text-align: center; color: var(--text-sm);">No individual modality marks available.</td>
+          </tr>
+          {% endif %}
+          
+          <tr class="total-row">
+            <td><strong>Aggregated Total</strong></td>
+            <td><strong>{{ attempt.total_marks_earned }} / {{ (attempt.jit_exam_max_marks if attempt.has_jit else (attempt.llm_total_marks or exam.max_marks)) or 'N/A' }}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section-level breakdown -->
+    {% if attempt.section_breakdown %}
+    <div class="section-box">
+      <div class="section-box-title">Section Performance</div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Section</th>
+            <th>Earned</th>
+            <th>Total</th>
+            <th>%</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sb in attempt.section_breakdown %}
+          {% set pct = ((sb.earned / sb.total * 100) | round(1)) if sb.total else 0 %}
+          <tr>
+            <td>{{ sb.section_title }}</td>
+            <td>{{ sb.earned }}</td>
+            <td>{{ sb.total }}</td>
+            <td>{{ pct }}%</td>
+            <td>
+              <span class="badge {{ 'badge-pass' if pct >= 40 else 'badge-fail' }}">
+                {{ "PASS" if pct >= 40 else "FAIL" }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <!-- ── LLM Question Detail – FULL NEW PAGE ── -->
+    {% if questions and questions.llm_morphed_questions %}
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+    </div><!-- close Score Summary page -->
+
+    <!-- ═══ PAGE: LLM QUESTION DETAIL ═══ -->
+    <div class="page">
+      <div class="page-header">
+        <div class="page-header-logo"></div>
+        <span class="page-candidate">Question Detail · {{ display_name }} · Drive #{{ exam.drive_id }}</span>
+      </div>
+      <div class="content-title">LLM Morphed Question Detail</div>
+
+      {% set total_q = questions.llm_morphed_questions | length %}
+      {% set correct_count = questions.llm_morphed_questions | selectattr('is_correct') | list | length %}
+      {% set total_score = questions.llm_morphed_questions | map(attribute='score') | sum %}
+
+      <!-- Summary bar -->
+      <div class="summary-grid" style="margin-bottom: 6mm;">
+        <div class="summary-card sc-blue">
+          <div class="sc-value">{{ total_q }}</div>
+          <div class="sc-label">Total Questions</div>
+        </div>
+        <div class="summary-card sc-green">
+          <div class="sc-value">{{ correct_count }}</div>
+          <div class="sc-label">Correct</div>
+        </div>
+        <div class="summary-card sc-red">
+          <div class="sc-value">{{ total_q - correct_count }}</div>
+          <div class="sc-label">Incorrect</div>
+        </div>
+        <div class="summary-card sc-purple">
+          <div class="sc-value">{{ total_score | round(2) }} / {{ total_q }}</div>
+          <div class="sc-label">Score</div>
+        </div>
+      </div>
+
+      {% for q in questions.llm_morphed_questions %}
+      <div style="border: 1px solid var(--border); border-radius: 8px; margin-bottom: 5mm; overflow: hidden; page-break-inside: avoid;">
+
+        <!-- Question header bar -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: {% if q.is_correct %}#f0fdf4{% else %}#fef2f2{% endif %}; padding: 8px 14px; border-bottom: 1px solid var(--border);">
+          <div style="font-weight: 700; color: var(--blue); font-size: 10pt;">Q{{ q.question_number }}</div>
+          <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 8pt; color: var(--text-sm);">{{ q.section_title }}</span>
+            {% if q.morphing_strategy %}
+            <span style="font-size: 7.5pt; background: #ede9fe; color: #4c1d95; border-radius: 4px; padding: 1px 6px; font-weight: 700;">{{ q.morphing_strategy | upper }}</span>
+            {% endif %}
+            <span style="font-size: 7.5pt; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px;">{{ q.question_type | upper }}</span>
+            {% if q.difficulty_actual %}
+            <span style="font-size: 7.5pt; background: #fef9c3; color: #854d0e; border-radius: 4px; padding: 1px 6px;">Difficulty: {{ q.difficulty_actual }}</span>
+            {% endif %}
+            <span style="font-size: 8pt; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 7px; font-weight: 600;">{{ q.score }} / {{ q.max_score }}</span>
+            {% if q.is_correct %}
+            <span class="badge badge-pass">✓ Correct</span>
+            {% else %}
+            <span class="badge badge-fail">✗ Wrong</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div style="padding: 10px 14px;">
+
+          <!-- Question text -->
+          <div style="font-size: 9pt; font-weight: 600; color: var(--text); margin-bottom: 8px; line-height: 1.5;">
+            {{ q.question_text }}
+          </div>
+
+          <!-- MCQ Options -->
+          {% if q.options and q.options | length > 0 %}
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+            {% for opt in q.options %}
+            {% set letter = ['A','B','C','D','E','F'][loop.index0] if loop.index0 < 6 else '' %}
+            {% set is_selected = q.candidate_answer and (q.candidate_answer == opt or q.candidate_answer == letter) %}
+            {% set is_answer = q.correct_answers and (opt in q.correct_answers or letter in q.correct_answers) %}
+            <div style="flex: 0 1 calc(50% - 6px); background: {% if is_answer %}#f0fdf4{% elif is_selected %}#fff7f7{% else %}#f8fafc{% endif %}; border: 1.5px solid {% if is_answer %}var(--green){% elif is_selected %}var(--red){% else %}var(--border){% endif %}; border-radius: 5px; padding: 5px 8px; font-size: 8pt;">
+              <span style="font-weight: 700; color: {% if is_answer %}var(--green){% elif is_selected %}var(--red){% else %}var(--text-sm){% endif %}; margin-right: 5px;">{{ letter }}.</span>{{ opt }}
+              {% if is_answer %}<span style="font-size: 7pt; color: var(--green);"> ✓</span>{% endif %}
+              {% if is_selected and not is_answer %}<span style="font-size: 7pt; color: var(--red);"> ✗</span>{% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Answer comparison row -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+            <!-- Candidate answer -->
+            <div style="background: {% if q.is_correct %}#f0fdf4{% else %}#fff7f7{% endif %}; border-radius: 6px; padding: 8px; border-left: 3px solid {% if q.is_correct %}var(--green){% else %}var(--red){% endif %};">
+              <div style="font-size: 7.5pt; font-weight: 700; text-transform: uppercase; color: {% if q.is_correct %}var(--green){% else %}var(--red){% endif %}; margin-bottom: 4px;">Candidate's Answer</div>
+              <div style="font-size: 8.5pt; color: var(--text);">{{ q.candidate_answer if q.candidate_answer else '— Not answered —' }}</div>
+            </div>
+
+            <!-- Correct answer -->
+            <div style="background: #f0fdf4; border-radius: 6px; padding: 8px; border-left: 3px solid var(--green);">
+              <div style="font-size: 7.5pt; font-weight: 700; text-transform: uppercase; color: var(--green); margin-bottom: 4px;">Correct Answer</div>
+              <div style="font-size: 8.5pt; color: var(--text);">
+                {% if q.correct_answers %}{{ q.correct_answers | join(", ") }}{% else %}—{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback -->
+          {% if q.feedback %}
+          <div style="background: #fffbeb; border-radius: 6px; padding: 6px 10px; border-left: 3px solid var(--amber); margin-top: 8px;">
+            <div style="font-size: 7.5pt; font-weight: 700; text-transform: uppercase; color: var(--amber); margin-bottom: 2px;">AI Explanation</div>
+            <div style="font-size: 8.5pt; color: var(--text);">{{ q.feedback }}</div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+      {% endfor %}
+
+
+      <div class="page-footer">
+        <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+        <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+      </div>
+    </div><!-- end LLM Question Detail page -->
+
+
+    <!-- ═══ PAGE: SCORE SUMMARY CONTINUED ═══ -->
+    <div class="page">
+      <div class="page-header">
+        <div class="page-header-logo"></div>
+        <span class="page-candidate">{{ display_name }} · Drive #{{ exam.drive_id }}</span>
+      </div>
+      <div class="content-title">Score Summary (continued)</div>
+
+    {% else %}
+    <!-- ── No LLM questions: add footer and close the Score Summary page ── -->
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+    </div><!-- close Score Summary page (no LLM questions path) -->
+
+    <!-- Open Score Summary Continued for Attempt History -->
+    <div class="page">
+      <div class="page-header">
+        <div class="page-header-logo"></div>
+        <span class="page-candidate">{{ display_name }} · Drive #{{ exam.drive_id }}</span>
+      </div>
+      <div class="content-title">Score Summary (continued)</div>
+    {% endif %}
+
+    <!-- ── All Attempts History ── -->
+    {% if all_attempts %}
+    <div class="section-box">
+      <div class="section-box-title">All Attempts History</div>
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Attempt #</th>
+            <th>Started</th>
+            <th>Finished</th>
+            <th>Status</th>
+            <th>LLM Marks</th>
+            <th>LLM Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in all_attempts %}
+          <tr {% if a.attempt_id == attempt.attempt_id %}style="background: #eef2ff;"{% endif %}>
+            <td style="font-weight: 700; color: var(--blue);">
+              #{{ a.attempt_id }}
+              {% if a.attempt_id == attempt.attempt_id %}
+              <span style="font-size: 7pt; background: var(--blue); color: white; padding: 1px 5px; border-radius: 4px; margin-left: 4px;">Current</span>
+              {% endif %}
+            </td>
+            <td style="font-size: 8.5pt;">{{ a.start_time[:16].replace("T", " ") if a.start_time else "—" }}</td>
+            <td style="font-size: 8.5pt;">{{ a.end_time[:16].replace("T", " ") if a.end_time and a.end_time != "In Progress" else "—" }}</td>
+            <td>
+              <span style="font-weight: 600; color: {% if a.status == 'submitted' %}var(--green){% elif a.status == 'started' %}var(--amber){% else %}var(--text-sm){% endif %};">
+                {{ a.status | title }}
+              </span>
+            </td>
+            <td style="font-weight: 600;">{{ a.llm_marks }}</td>
+            <td>
+              <span class="badge {% if a.llm_result == 'pass' %}badge-pass{% else %}badge-fail{% endif %}">
+                {{ a.llm_result | upper if a.llm_result else '—' }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; color: var(--text-sm); padding: 20mm 0; font-size: 9pt;">No attempt history available.</div>
+    {% endif %}
+
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+  </div><!-- close Score Summary Continued page -->
+
+
+
+
+  <!-- ═══════════════════════════════════════════════
+     PAGE 3: AI SUMMARY & RECOMMENDATION
+═══════════════════════════════════════════════ -->
+  {% if ai_summary %}
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-logo"></div>
+      <span class="page-candidate">AI Summary</span>
+    </div>
+    <div class="content-title">AI Analysis & Recommendation</div>
+
+    <div class="ai-verdict-block verdict-{{ ai_summary.verdict | lower | replace(' ', '-') }}">
+      <div class="ai-verdict-main">{{ ai_summary.verdict }}</div>
+      <div class="ai-verdict-conf">Confidence Score: {{ ai_summary.confidence_score }}/100</div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">Overview</div>
+      <p class="ai-text">{{ ai_summary.overview }}</p>
+    </div>
+
+    <div class="two-col">
+      <div class="section-box">
+        <div class="section-box-title">Strengths</div>
+        <ul class="ai-list ai-list-green">
+          {% for s in ai_summary.strengths %}
+          <li>{{ s }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="section-box">
+        <div class="section-box-title">Areas for Improvement</div>
+        <ul class="ai-list ai-list-red">
+          {% for w in ai_summary.weaknesses %}
+          <li>{{ w }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-box">
+      <div class="section-box-title">Proctoring Assessment</div>
+      <p class="ai-text">{{ ai_summary.proctoring_assessment }}</p>
+    </div>
+
+    <div class="section-box recommendation-box">
+      <div class="section-box-title">Hiring Recommendation</div>
+      <p class="ai-text recommendation-text">{{ ai_summary.recommendation }}</p>
+    </div>
+  
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+</div>
+  {% endif %}
+
+
+  <!-- ═══════════════════════════════════════════════
+     PAGES: Q&A PER SECTION
+═══════════════════════════════════════════════ -->
+  {% for section in sections %}
+  {% if section.questions %}
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-logo"></div>
+      <span class="page-candidate">Section {{ loop.index }}</span>
+    </div>
+    <div class="content-title">Section {{ loop.index }}: {{ section.title | smart_title }}</div>
+
+    {% if section.description %}
+    <div class="section-desc">{{ section.description }}</div>
+    {% endif %}
+
+    <div class="section-score-bar">
+      <span class="ssb-label">Section Score:</span>
+      <span class="ssb-value">{{ section.marks_earned }} / {{ section.total_marks }}</span>
+      {% set spct = ((section.marks_earned / section.total_marks * 100) | round(1)) if section.total_marks else 0 %}
+      <span class="ssb-pct">{{ spct }}%</span>
+      <span class="badge {{ 'badge-pass' if spct >= 40 else 'badge-fail' }}">{{ "PASS" if spct >= 40 else "FAIL"
+        }}</span>
+    </div>
+
+    {% for q in section.questions %}
+    <div class="question-block {{ 'q-pass' if q.passed else 'q-fail' }}">
+      <div class="q-header">
+        <span class="q-num">Q{{ loop.index }}</span>
+        <span class="q-type-badge">{{ q.question_type | upper | replace('_', ' ') }}</span>
+        {% if q.is_morphed %}<span class="q-morphed-badge">LLM MORPHED</span>{% endif %}
+        <span class="q-marks {{ 'marks-pass' if q.passed else 'marks-fail' }}">
+          {{ q.marks_earned }} / {{ q.marks_total }}
+        </span>
+        <span class="q-result-badge {{ 'badge-pass' if q.passed else 'badge-fail' }}">
+          {{ "PASS" if q.passed else "FAIL" }}
+        </span>
+      </div>
+
+      <div class="q-text">{{ q.question_text }}</div>
+
+      <!-- MCQ Options -->
+      {% if q.options %}
+      <div class="q-options">
+        {% for opt in q.options %}
+        {% set opt_text = opt.text if opt is mapping else opt %}
+        {% set opt_val = opt.value if opt is mapping else opt %}
+        <div class="q-option
+        {{ 'opt-correct' if opt_val == q.correct_answer or opt_text == q.correct_answer else '' }}
+        {{ 'opt-selected' if opt_val == q.candidate_answer or opt_text == q.candidate_answer else '' }}">
+          <span class="opt-marker">
+            {% if opt_val == q.correct_answer or opt_text == q.correct_answer %}✓
+            {% elif opt_val == q.candidate_answer or opt_text == q.candidate_answer %}✗
+            {% else %}○{% endif %}
+          </span>
+          {{ opt_text }}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <!-- Text / Essay / Code answer -->
+      <div class="q-answer-section">
+        <div class="qa-label">Candidate's Answer:</div>
+        <div class="qa-content {{ 'qa-code' if q.question_type in ['coding', 'code'] else '' }}">{{ q.candidate_answer
+          }}</div>
+      </div>
+      {% if q.correct_answer %}
+      <div class="q-answer-section">
+        <div class="qa-label">Expected Answer:</div>
+        <div class="qa-content">{{ q.correct_answer }}</div>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      <!-- LLM Feedback -->
+      {% if q.llm_feedback %}
+      <div class="llm-feedback">
+        <span class="llm-fb-label">AI Feedback:</span> {{ q.llm_feedback }}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+</div>
+  {% endif %}
+  {% endfor %}
+
+
+  <!-- ═══════════════════════════════════════════════
+     PAGES: PROCTORING — ONE PAGE PER ALERT
+═══════════════════════════════════════════════ -->
+  {% for alert in proctoring.alerts %}
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-logo"></div>
+      <span class="page-candidate">Alert ID: {{ alert.alert_id | default('Manual') }}</span>
+    </div>
+    <div class="content-title">Proctoring Alert {{ loop.index }}/{{ proctoring.total_alerts }}</div>
+
+    <!-- Alert header card -->
+    <div class="alert-header-card severity-{{ alert.severity }}">
+      <div class="alert-type-row">
+        <span class="alert-type-icon
+        {% if alert.severity == 'high' %}icon-high
+        {% elif alert.severity == 'medium' %}icon-medium
+        {% else %}icon-low{% endif %}">!</span>
+        <span class="alert-type-text">{{ alert.alert_type | smart_title }}</span>
+        <span class="severity-badge severity-badge-{{ alert.severity }}">
+          {{ alert.severity | upper }}
+        </span>
+      </div>
+      <div class="alert-meta-row">
+        <span><strong>Time:</strong> {{ alert.timestamp }}</span>
+        {% if alert.section_id %}
+        <span><strong>Section ID:</strong> {{ alert.section_id }}</span>
+        {% endif %}
+        {% if alert.warning_folder %}
+        <span><strong>Folder:</strong> {{ alert.warning_folder[:60] }}{% if alert.warning_folder|length > 60 %}…{% endif
+          %}</span>
+        {% endif %}
+      </div>
+      {% if alert.description %}
+      <div class="alert-desc">{{ alert.description }}</div>
+      {% endif %}
+    </div>
+
+    {% set evidence_total = alert._image_total if alert._image_total is defined else (alert.images | length) %}
+    {% if evidence_total > 0 %}
+    <div class="evidence-section-title">Evidence Frames: {{ evidence_total }} captured</div>
+    <div
+      class="evidence-grid hybrid-evidence-grid"
+      data-report-id="{{ report_id if report_id is defined else '' }}"
+      data-alert-index="{{ alert._hybrid_alert_index if alert._hybrid_alert_index is defined else loop.index0 }}"
+      data-page-size="20"
+      data-next-page="1"
+      data-total="{{ evidence_total }}"
+      data-loading="0"
+      data-prefetched="0"
+    ></div>
+    <div class="hybrid-evidence-sentinel" aria-hidden="true"></div>
+    {% else %}
+    <div class="no-evidence">No evidence frames captured for this alert.</div>
+    {% endif %}
+  
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+</div>
+  {% endfor %}
+
+
+  <!-- ═══════════════════════════════════════════════
+     LAST PAGE: SIGNATURE / DECLARATION
+═══════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="page-header">
+      <div class="page-header-logo"></div>
+      <span class="page-candidate">{{ display_name }}</span>
+    </div>
+    <div class="content-title">Report Declaration</div>
+
+    <div class="declaration-box">
+      {% set declaration_text = ai_summary.report_declaration if ai_summary and ai_summary.report_declaration else '' %}
+      {% if declaration_text %}
+      <p>{{ declaration_text | replace('\n', '<br />') | safe }}</p>
+      {% else %}
+      <p>This report summarizes candidate assessment outcomes and evidence references captured by the platform. Final decisions require reviewer validation.</p>
+      {% endif %}
+    </div>
+
+    <div class="signature-grid">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">HR Reviewer Signature</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">Date of Review</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">Final Decision</div>
+      </div>
+    </div>
+
+    <div class="report-id-block">
+      <strong>Report Reference:</strong> {{ candidate.candidate_id }}-{{ exam.drive_id }}-{{ attempt.attempt_id }}<br />
+      <strong>Candidate ID:</strong> {{ candidate.candidate_id }} &nbsp;|&nbsp;
+      <strong>Drive ID:</strong> {{ exam.drive_id }} &nbsp;|&nbsp;
+      <strong>Attempt ID:</strong> {{ attempt.attempt_id }}
+    </div>
+  
+    <div class="page-footer">
+      <span>Report ID: {{ candidate.candidate_id }}-{{ exam.drive_id }}</span>
+      <span>Generated: {{ generated_at[:19].replace("T", " ") }} UTC</span>
+    </div>
+</div>
+
+<script>
+(function () {
+  function createEvidenceCell(item) {
+    var cell = document.createElement("div");
+    cell.className = "evidence-cell";
+
+    var img = document.createElement("img");
+    img.className = "evidence-img";
+    img.loading = "lazy";
+    img.alt = item.file_name || "Evidence frame";
+    img.src = item.url || "";
+    cell.appendChild(img);
+
+    var caption = document.createElement("div");
+    caption.className = "evidence-caption";
+
+    var fileName = document.createElement("div");
+    fileName.className = "ec-filename";
+    fileName.textContent = item.file_name || "frame";
+
+    var time = document.createElement("div");
+    time.className = "ec-time";
+    time.textContent = item.time || "";
+
+    caption.appendChild(fileName);
+    caption.appendChild(time);
+    cell.appendChild(caption);
+    return cell;
+  }
+
+  async function fetchEvidencePage(grid, page) {
+    var reportId = grid.getAttribute("data-report-id") || "";
+    var alertIndex = grid.getAttribute("data-alert-index") || "0";
+    var pageSize = grid.getAttribute("data-page-size") || "20";
+
+    if (!reportId) {
+      return null;
+    }
+
+    var url = "/reports/" + encodeURIComponent(reportId) + "/evidence"
+      + "?alert_index=" + encodeURIComponent(alertIndex)
+      + "&page=" + encodeURIComponent(page)
+      + "&page_size=" + encodeURIComponent(pageSize);
+
+    var res = await fetch(url, { method: "GET" });
+    if (!res.ok) {
+      return null;
+    }
+    return await res.json();
+  }
+
+  async function loadNextPage(grid, isPrefetch) {
+    if (grid.getAttribute("data-loading") === "1") {
+      return;
+    }
+
+    var nextPage = parseInt(grid.getAttribute("data-next-page") || "1", 10);
+    if (nextPage <= 0) {
+      return;
+    }
+
+    grid.setAttribute("data-loading", "1");
+    try {
+      var data = await fetchEvidencePage(grid, nextPage);
+      if (!data || !Array.isArray(data.items)) {
+        grid.setAttribute("data-loading", "0");
+        return;
+      }
+
+      data.items.forEach(function (item) {
+        grid.appendChild(createEvidenceCell(item));
+      });
+
+      if (data.has_next) {
+        grid.setAttribute("data-next-page", String(nextPage + 1));
+      } else {
+        grid.setAttribute("data-next-page", "0");
+      }
+
+      if (!isPrefetch && nextPage === 2 && data.has_next && grid.getAttribute("data-prefetched") !== "1") {
+        grid.setAttribute("data-prefetched", "1");
+        var schedule = window.requestIdleCallback || function (cb) { setTimeout(cb, 120); };
+        schedule(function () {
+          loadNextPage(grid, true);
+        });
+      }
+    } finally {
+      grid.setAttribute("data-loading", "0");
+    }
+  }
+
+  var grids = Array.prototype.slice.call(document.querySelectorAll(".hybrid-evidence-grid"));
+  if (!grids.length) {
+    return;
+  }
+
+  var initObserver = new IntersectionObserver(function (entries, observer) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) {
+        return;
+      }
+      loadNextPage(entry.target, false);
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: "200px 0px" });
+
+  var pagingObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) {
+        return;
+      }
+      var grid = entry.target.previousElementSibling;
+      if (grid && grid.classList.contains("hybrid-evidence-grid")) {
+        loadNextPage(grid, false);
+      }
+    });
+  }, { rootMargin: "600px 0px" });
+
+  grids.forEach(function (grid) {
+    initObserver.observe(grid);
+    var sentinel = grid.nextElementSibling;
+    if (sentinel && sentinel.classList.contains("hybrid-evidence-sentinel")) {
+      pagingObserver.observe(sentinel);
+    }
+  });
+})();
+</script>
+
+</body>
+
+</html>

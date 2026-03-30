@@ -1,0 +1,13 @@
+﻿{
+"section": "Programming",
+"question": "Which of these represent standard immutable data collections in Python? Select ALL that apply.",
+"options": ["int", "tuple", "frozenset", "list", "str", "bytearray"],
+"correct_answers": ["tuple", "frozenset", "str"],
+"partial_credit": true,
+"morph_config": {
+"strategies": ["msq_rephrase"],
+"variant_count": 1,
+"target_difficulty": 5,
+"bloom_target": "apply"
+}
+}

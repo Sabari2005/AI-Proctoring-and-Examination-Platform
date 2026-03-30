@@ -1,0 +1,92 @@
+﻿{
+    "section":  "Coding",
+    "question":  "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. Each input has exactly one solution. You may not use the same element twice.",
+    "test_cases":  {
+                       "tc_1":  {
+                                    "input":  {
+                                                  "nums":  [
+                                                               2,
+                                                               7,
+                                                               11,
+                                                               15
+                                                           ],
+                                                  "target":  9
+                                              },
+                                    "output":  [
+                                                   0,
+                                                   1
+                                               ],
+                                    "category":  "basic"
+                                },
+                       "tc_2":  {
+                                    "input":  {
+                                                  "nums":  [
+                                                               3,
+                                                               2,
+                                                               4
+                                                           ],
+                                                  "target":  6
+                                              },
+                                    "output":  [
+                                                   1,
+                                                   2
+                                               ],
+                                    "category":  "basic"
+                                },
+                       "tc_3":  {
+                                    "input":  {
+                                                  "nums":  [
+                                                               3,
+                                                               3
+                                                           ],
+                                                  "target":  6
+                                              },
+                                    "output":  [
+                                                   0,
+                                                   1
+                                               ],
+                                    "category":  "basic",
+                                    "explanation":  "duplicate values"
+                                },
+                       "tc_4":  {
+                                    "input":  {
+                                                  "nums":  [
+                                                               -1,
+                                                               -2,
+                                                               -3,
+                                                               -4,
+                                                               -5
+                                                           ],
+                                                  "target":  -8
+                                              },
+                                    "output":  [
+                                                   2,
+                                                   4
+                                               ],
+                                    "category":  "basic",
+                                    "explanation":  "negative numbers"
+                                }
+                   },
+    "constraints":  {
+                        "time_complexity":  "O(n)",
+                        "space_complexity":  "O(n)",
+                        "input_size":  "1 \u003c= n \u003c= 10000",
+                        "value_range":  "-1000000000 \u003c= nums[i], target \u003c= 1000000000"
+                    },
+    "difficulty":  2,
+    "topic_tags":  [
+                       "array",
+                       "hash-map",
+                       "two-pointer"
+                   ],
+    "function_signature":  "def twoSum(nums: list[int], target: int) -\u003e list[int]:",
+    "morph_config":  {
+                         "strategies":  [
+                                            "code_tcgen"
+                                        ],
+                         "variant_count":  1,
+                         "tc_count":  6,
+                         "target_difficulty":  3,
+                         "bloom_target":  "apply"
+                     }
+}

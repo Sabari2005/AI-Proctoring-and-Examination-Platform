@@ -1,0 +1,16 @@
+﻿{
+  "section": "Physics",
+  "question": "A car travels at 80 km/h for 2.5 hours. What is the total distance covered in km?",
+  "correct_value": 200.0,
+  "unit": "km",
+  "tolerance": 0.0,
+  "tolerance_type": "exact",
+  "decimal_places": 1,
+  "formula": "distance = speed * time",
+  "morph_config": {
+    "strategies": ["numerical_difficulty"],
+    "variant_count": 1,
+    "target_difficulty": 5,
+    "bloom_target": "evaluate"
+  }
+}
