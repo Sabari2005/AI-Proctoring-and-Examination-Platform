@@ -246,3 +246,7 @@ If any command returns `False`, copy from `.env.example` and set real values bef
 
 - Download EXE: [Google Drive Link](https://drive.google.com/file/d/1t6lMF2YBEF8WOVlN90k4zm10z7LF2Np5/view?usp=drive_link)
 
+
+## DEMO VIDEO
+
+[click here](https://drive.google.com/file/d/1xja1Q5mrVP9DZKmAbGbMpsCun8lYYzPz/view?usp=sharing)
