@@ -158,7 +158,7 @@ graph LR
 
 - [Web_Server/main.py](Web_Server/main.py): FastAPI app creation, CORS setup, router wiring.
 - [Web_Server/database.py](Web_Server/database.py): DB engine/session/base setup.
-- [Web_Server/models.py](Web_Server/models.py): Full relational domain model.
+- [Web_Server/models.py](Web_Server/models.py): Full Neonn DB relational domain model.
 - [Web_Server/security.py](Web_Server/security.py): access token create/decode.
 - [Web_Server/storage.py](Web_Server/storage.py): Supabase client bootstrap.
 - [Web_Server/services/upload_service.py](Web_Server/services/upload_service.py): bucket upload helper.
@@ -215,7 +215,7 @@ The following are used directly by code in this service.
 
 ### Database and storage
 
-- DATABASE_URL (required): SQLAlchemy connection URL.
+- DATABASE_URL (required): SQLAlchemy connection URL (NEON DB).
 - SUPABASE_URL (required): Supabase project URL.
 - SUPABASE_KEY (required by current storage client): API key used by Supabase SDK.
 
