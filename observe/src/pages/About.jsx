@@ -1,6 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+const SabariPhoto = '/Sabari.jpeg';
+const UvarajanPhoto = '/Uvarajan.jpeg';
+const SarathiPhoto = '/Sarathi.jpeg';
+const KaviarasuPhoto = '/kaviarasu.jpeg';
+const swathiPhoto = '/swathi.jpeg';
+
+const leadershipMembers = [
+    { name: "Sabari Vadivelan S", role: "AI & Backend Developer", img: SabariPhoto },
+    { name: "Uvarajan D", role: "API & Backend Developer", img: UvarajanPhoto },
+    { name: "Kaviarasu K", role: "UI/UX Developer & Motion Graphics", img: KaviarasuPhoto },
+    { name: "Sarathi S", role: "Web Developer", img: SarathiPhoto },
+    { name: "Swathi S", role: "Web Developer", img: swathiPhoto },
+];
+
 const About = () => {
     return (
         <div className="min-h-screen bg-white pb-20 pt-32">
@@ -26,25 +40,66 @@ const About = () => {
                 </div>
             </div>
 
-            <div className="bg-[#F8FAFC] py-32 border-y border-gray-100">
+            <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#f3f8ff_0%,#f8fafc_52%,#ffffff_100%)] py-32 border-y border-slate-200">
+                <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-cyan-200/35 blur-3xl"></div>
+                <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-indigo-200/35 blur-3xl"></div>
                 <div className="max-w-[1200px] mx-auto px-6 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-16">The Leadership Team</h2>
-                    <div className="grid md:grid-cols-3 gap-10">
-                        {[
-                            { name: "Sarah Jenkins", role: "Chief Executive Officer", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400" },
-                            { name: "David Chen", role: "Chief Technology Officer", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400" },
-                            { name: "Elena Rodriguez", role: "Head of Product", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" },
-                        ].map((member, i) => (
-                            <motion.div 
+                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-16">The Leadership Team</h2>
+                    {/*
+                      Legacy profile display (kept as requested):
+                      <div className="max-w-[1000px] mx-auto flex flex-wrap justify-center gap-x-20 gap-y-6">
+                          {[
+                              { name: "Sabari Vadivelan S", role: "AI & Backend Developer", img: SabariPhoto },
+                              { name: "Uvarajan D", role: "API & Backend Developer", img: UvarajanPhoto },
+                              { name: "Kaviarasu K", role: "UI/UX & Graphics Designer", img: KaviarasuPhoto },
+                              { name: "Sarathi S", role: "Web Developer", img: SarathiPhoto },
+                              { name: "Swathi S", role: "Web Developer", img: swathiPhoto },
+                          ].map((member, i) => (
+                              <motion.div
+                                  key={member.name}
+                                  className="w-[240px]"
+                                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                              >
+                                  <div className="w-48 h-48 mx-auto rounded-2xl overflow-hidden mb-6 border-4 border-white shadow-xl group cursor-pointer">
+                                      <img src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                  </div>
+                                  <h3 className="text-[1.85rem] md:text-[2.15rem] font-serif font-medium italic tracking-[0.035em] text-zinc-900 leading-none">{member.name}</h3>
+                                  <p className="text-indigo-600 font-medium">{member.role}</p>
+                              </motion.div>
+                          ))}
+                      </div>
+                    */}
+
+                    <div className="relative z-10 max-w-[1020px] mx-auto flex flex-wrap justify-center gap-8">
+                        {leadershipMembers.map((member, i) => (
+                            <motion.article
                                 key={member.name}
-                                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                                className="group relative h-[430px] w-full overflow-hidden rounded-3xl border border-slate-200/80 text-left shadow-[0_14px_36px_rgba(15,23,42,0.14)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_44px_rgba(14,116,144,0.22)] sm:w-[300px]"
+                                initial={{ opacity: 0, y: 18 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.08 }}
                             >
-                                <div className="w-48 h-48 mx-auto rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl group cursor-pointer">
-                                    <img src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900">{member.name}</h3>
-                                <p className="text-indigo-600 font-medium">{member.role}</p>
-                            </motion.div>
+                                <img
+                                    src={member.img}
+                                    alt={member.name}
+                                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
+
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/10 to-transparent"></div>
+                                <div className="pointer-events-none absolute inset-0 ring-1 ring-white/35"></div>
+
+                                <motion.div
+                                    className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/40 bg-white/22 p-4 backdrop-blur-md transition-all duration-500 group-hover:border-white/60 group-hover:bg-white/28"
+                                    initial={{ opacity: 0, y: 12 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.2 + i * 0.08, duration: 0.45 }}
+                                >
+                                    <h3 className="text-[1.2rem] font-semibold tracking-tight text-white drop-shadow-[0_1px_8px_rgba(15,23,42,0.35)]">{member.name}</h3>
+                                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.1em] text-white/90">{member.role}</p>
+                                </motion.div>
+                            </motion.article>
                         ))}
                     </div>
                 </div>

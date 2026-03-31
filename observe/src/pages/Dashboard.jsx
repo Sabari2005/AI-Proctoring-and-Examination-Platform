@@ -43,6 +43,8 @@ const upcomingExam = {
     logo: "TC"
 };
 
+const EXE_DOWNLOAD_URL = 'https://drive.google.com/file/d/1t6lMF2YBEF8WOVlN90k4zm10z7LF2Np5/view?usp=sharing';
+
 const formatUpcomingHero = (exam) => {
     if (!exam) {
         return upcomingExam;
@@ -1014,10 +1016,24 @@ const Dashboard = () => {
                                             ? new Date(launchModalExam.exam_launch_code_expires_at).toLocaleString()
                                             : 'Not set'}
                                     </p>
+                                    <div className="mt-2 rounded-xl border border-amber-300/80 bg-amber-100/45 backdrop-blur-md px-3 py-2 shadow-[0_8px_24px_rgba(245,158,11,0.12)]">
+                                        <p className="text-xs font-medium text-amber-900">
+                                            Download and install the desktop EXE first, then use this code inside the application to start your exam.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
                             <div className="px-6 py-5 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3 sm:justify-end">
+                                <a
+                                    href={EXE_DOWNLOAD_URL}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 font-medium text-indigo-700 hover:bg-indigo-100 transition-colors inline-flex items-center justify-center gap-2"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Download EXE
+                                </a>
                                 <button
                                     onClick={copyLaunchCode}
                                     className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-200 font-medium text-gray-700 hover:bg-gray-100 transition-colors"
@@ -1486,7 +1502,7 @@ const ExamHistoryView = ({ historyItems, loading, onOfferDownload }) => (
                         <div className="w-full lg:w-auto min-w-[120px] shrink-0 flex justify-end">
                             {isPass ? (
                                 <button onClick={() => onOfferDownload(item.result_id)} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-all shadow-sm group/btn hover:-translate-y-0.5 whitespace-nowrap">
-                                    <Download className="w-4 h-4 group-hover/btn:scale-110 transition-transform" /> Offer Download
+                                    <Download className="w-4 h-4 group-hover/btn:scale-110 transition-transform" /> Download
                                 </button>
                             ) : (
                                 <span className="inline-flex w-full sm:w-auto items-center justify-center px-5 py-2.5 text-sm font-medium text-gray-400 whitespace-nowrap">

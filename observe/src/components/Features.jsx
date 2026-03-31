@@ -202,7 +202,7 @@ const AdaptiveChartAnim = () => (
 /* --- Feature Data --- */
 
 const features = [
-    { title: "Anti-OCR Display", desc: "Proprietary text rendering prevents illicit photos by rapidly alternating characters. It remains perfectly readable to the human eye, but registers as a scrambled blur to any camera lens.", anim: ScrambleTextAnim, cols: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
+    { title: "Anti-OCR Display Upcoming Feature", desc: "Proprietary text rendering prevents illicit photos by rapidly alternating characters. It remains perfectly readable to the human eye, but registers as a scrambled blur to any camera lens", anim: ScrambleTextAnim, cols: "md:col-span-2 lg:col-span-2 lg:row-span-2" },
     { title: "Real-time Intervention", desc: "Immediate automated actions to confidentially pause or intervene during an anomaly.", anim: RadarPulseAnim, cols: "md:col-span-1 lg:col-span-1" },
     { title: "LLM Morphing", desc: "Dynamically rewrites question phrasing on the fly, rendering cheat sheets useless.", anim: MorphAnim, cols: "md:col-span-1 lg:col-span-1" },
     { title: "J.I.T. Generation", desc: "Questions procedurally generated ms before rendering, preventing local caching.", anim: JITAnim, cols: "md:col-span-1 lg:col-span-1" },
@@ -263,6 +263,11 @@ const Features = () => {
                                 <h4 className="text-2xl font-bold tracking-tight text-gray-900 mb-2">
                                     {feature.title}
                                 </h4>
+                                {feature.title === "Anti-OCR Display Upcoming Feature" && (
+                                    <p className="text-yellow-500 leading-relaxed text-[15px] font-medium mb-1">
+                                        Upcoming Feature
+                                    </p>
+                                )}
                                 <p className="text-gray-500 leading-relaxed text-[15px] font-medium">
                                     {feature.desc}
                                 </p>
