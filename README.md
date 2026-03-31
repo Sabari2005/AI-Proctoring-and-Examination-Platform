@@ -165,7 +165,7 @@ Key role in architecture:
 ## Data and Integration Boundaries
 
 ### Shared Data Stores
-- PostgreSQL (primary relational domain data)
+- PostgreSQL (primary relational domain data) Deployed in Neon DB 
 - Supabase Storage (documents, evidence, report artifacts)
 
 ### LLM Providers
