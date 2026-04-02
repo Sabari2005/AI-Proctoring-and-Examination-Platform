@@ -305,7 +305,7 @@ If the file is missing, create it from `Web_Server/.env.example` and populate re
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- Web_Server/                  <-- current service
 |- Coding_Environment_Service/
 |- Core_Backend_Services/
@@ -317,3 +317,4 @@ virtusa-github/
 |- EXE-Application/
 |- observe/
 ```
+

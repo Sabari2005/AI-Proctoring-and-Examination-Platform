@@ -259,7 +259,7 @@ If the file is missing, create it from `Report_Generation_service/.env.example` 
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- Report_Generation_service/   <-- current service
 |- Rendering_service/
 |  |- report_agent/
@@ -271,3 +271,4 @@ virtusa-github/
 |- EXE-Application/
 |- observe/
 ```
+

@@ -191,9 +191,9 @@ def validate_production_env():
     """Fail closed when required production environment values are missing or weak."""
     log("[STEP] Validating production environment")
 
-    backend_url = (os.environ.get("VIRTUSA_SERVER_URL") or os.environ.get("VIRTUSA_BACKEND_URL") or "").strip()
+    backend_url = (os.environ.get("OBSERVE_SERVER_URL") or os.environ.get("OBSERVE_BACKEND_URL") or "").strip()
     if not backend_url:
-        log("[ERROR] Missing VIRTUSA_SERVER_URL (or VIRTUSA_BACKEND_URL).")
+        log("[ERROR] Missing OBSERVE_SERVER_URL (or OBSERVE_BACKEND_URL).")
         sys.exit(1)
     if not backend_url.lower().startswith("https://"):
         log("[ERROR] Backend URL must use HTTPS for production.")
@@ -204,9 +204,9 @@ def validate_production_env():
         log(f"[ERROR] Got host: {backend_host or 'missing'}")
         sys.exit(1)
 
-    secret = (os.environ.get("VIRTUSA_PROCTOR_SECRET") or "").strip()
+    secret = (os.environ.get("OBSERVE_PROCTOR_SECRET") or "").strip()
     if not secret or secret == "dev-shared-secret-change-me" or len(secret) < 24:
-        log("[ERROR] VIRTUSA_PROCTOR_SECRET must be set to a strong production value (min 24 chars).")
+        log("[ERROR] OBSERVE_PROCTOR_SECRET must be set to a strong production value (min 24 chars).")
         sys.exit(1)
 
     log("[OK] Production env validation passed")

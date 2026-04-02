@@ -36,10 +36,10 @@ def _machine_fingerprint() -> str:
 
 def _shared_secret() -> bytes:
     """Load and validate the HMAC secret used for request signing."""
-    secret = (os.environ.get("VIRTUSA_PROCTOR_SECRET") or "").strip()
+    secret = (os.environ.get("OBSERVE_PROCTOR_SECRET") or "").strip()
     if not secret or secret == "dev-shared-secret-change-me" or len(secret) < 24:
         raise RuntimeError(
-            "Invalid VIRTUSA_PROCTOR_SECRET. Configure a strong production secret (min 24 chars)."
+            "Invalid OBSERVE_PROCTOR_SECRET. Configure a strong production secret (min 24 chars)."
         )
     return secret.encode("utf-8")
 
@@ -115,7 +115,7 @@ class ExamApiClient:
             payload["exam_launch_code"] = str(exam_launch_code).strip().upper()
         headers = {
             "Content-Type": "application/json",
-            "X-Virtusa-Signature": _signature(payload),
+            "X-Observe-Signature": _signature(payload),
         }
         response = requests.post(
             f"{server_url}/v1/exam/bootstrap",
@@ -161,7 +161,7 @@ class ExamApiClient:
             payload["question_number"] = int(question_number)
         headers = {
             "Content-Type": "application/json",
-            "X-Virtusa-Signature": _signature(payload),
+            "X-Observe-Signature": _signature(payload),
         }
         response = requests.post(
             f"{server_url}/v1/exam/answer",
@@ -194,7 +194,7 @@ class ExamApiClient:
         }
         headers = {
             "Content-Type": "application/json",
-            "X-Virtusa-Signature": _signature(payload),
+            "X-Observe-Signature": _signature(payload),
         }
         response = requests.post(
             f"{server_url}/v1/exam/submit",
@@ -229,7 +229,7 @@ class ExamApiClient:
         }
         headers = {
             "Content-Type": "application/json",
-            "X-Virtusa-Signature": _signature(payload),
+            "X-Observe-Signature": _signature(payload),
         }
         response = requests.post(
             f"{server_url}/v1/exam/logs",
@@ -252,7 +252,7 @@ class ExamApiClient:
         """Execute coding-question source code through remote judge endpoints.
 
         Endpoint strategy:
-        - Try optional VIRTUSA_CODE_RUN_PATH first when configured.
+        - Try optional OBSERVE_CODE_RUN_PATH first when configured.
         - Fall back to known default paths.
         - Retry transient transport/service failures with short backoff.
         """
@@ -267,7 +267,7 @@ class ExamApiClient:
             "attempt_id": int(attempt_id) if attempt_id is not None else None,
             "timestamp": time.time(),
         }
-        configured_path = (os.getenv("VIRTUSA_CODE_RUN_PATH") or "").strip()
+        configured_path = (os.getenv("OBSERVE_CODE_RUN_PATH") or "").strip()
         candidate_paths = []
         if configured_path:
             candidate_paths.append(configured_path)
@@ -280,7 +280,7 @@ class ExamApiClient:
                 try:
                     headers = {
                         "Content-Type": "application/json",
-                        "X-Virtusa-Signature": _signature(payload),
+                        "X-Observe-Signature": _signature(payload),
                     }
                     response = requests.post(
                         f"{server_url}{normalized}",
@@ -349,7 +349,7 @@ class ExamApiClient:
 
         headers = {
             "Content-Type": "application/json",
-            "X-Virtusa-Signature": _signature(payload),
+            "X-Observe-Signature": _signature(payload),
         }
 
         response = requests.post(
@@ -360,3 +360,4 @@ class ExamApiClient:
         )
         response.raise_for_status()
         return response.json()
+

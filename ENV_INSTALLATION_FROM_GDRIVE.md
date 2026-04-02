@@ -8,7 +8,7 @@ https://drive.google.com/drive/folders/1IYAY8XZIZqugufNIZ6o6T1TchlIgKPW9?usp=sha
 ## Prerequisites
 
 - OS: Windows (PowerShell)
-- Repo path: E:\virtusa-github
+- Repo path: E:\observe-github
 - You already have `.env.example` files in every service folder.
 
 ## Target Files and Locations
@@ -42,18 +42,18 @@ Expected extracted structure (recommended):
 
 ## Step 2: Copy .env Files Into Services (PowerShell)
 
-Run these commands from `E:\virtusa-github`.
+Run these commands from `E:\observe-github`.
 
 ```powershell
 $CredRoot = "C:\Users\<YourUser>\Downloads\Workspace_Credentials"
 
-Copy-Item "$CredRoot\Web_Server_Credentials\.env" "E:\virtusa-github\Web_Server\.env" -Force
-Copy-Item "$CredRoot\Coding_Environment_Service_Credentials\.env" "E:\virtusa-github\Coding_Environment_Service\.env" -Force
-Copy-Item "$CredRoot\Core_Backend_Services\jit_Generator\.env" "E:\virtusa-github\Core_Backend_Services\JIT_Generator_Service\.env" -Force
-Copy-Item "$CredRoot\Core_Backend_Services\llm_morphing\.env" "E:\virtusa-github\Core_Backend_Services\LLM_Morphing_Service\.env" -Force
-Copy-Item "$CredRoot\Rendering_Service\.env" "E:\virtusa-github\Rendering_service\report_agent\.env" -Force
-Copy-Item "$CredRoot\Report_Generation_Service_Credentials\.env" "E:\virtusa-github\Report_Generation_service\.env" -Force
-Copy-Item "$CredRoot\EXE_Application_Credentials\.env" "E:\virtusa-github\EXE-Application\.env" -Force
+Copy-Item "$CredRoot\Web_Server_Credentials\.env" "E:\observe-github\Web_Server\.env" -Force
+Copy-Item "$CredRoot\Coding_Environment_Service_Credentials\.env" "E:\observe-github\Coding_Environment_Service\.env" -Force
+Copy-Item "$CredRoot\Core_Backend_Services\jit_Generator\.env" "E:\observe-github\Core_Backend_Services\JIT_Generator_Service\.env" -Force
+Copy-Item "$CredRoot\Core_Backend_Services\llm_morphing\.env" "E:\observe-github\Core_Backend_Services\LLM_Morphing_Service\.env" -Force
+Copy-Item "$CredRoot\Rendering_Service\.env" "E:\observe-github\Rendering_service\report_agent\.env" -Force
+Copy-Item "$CredRoot\Report_Generation_Service_Credentials\.env" "E:\observe-github\Report_Generation_service\.env" -Force
+Copy-Item "$CredRoot\EXE_Application_Credentials\.env" "E:\observe-github\EXE-Application\.env" -Force
 ```
 
 ## Step 3: Verify Installation
@@ -61,20 +61,20 @@ Copy-Item "$CredRoot\EXE_Application_Credentials\.env" "E:\virtusa-github\EXE-Ap
 Run:
 
 ```powershell
-Get-ChildItem -Path "E:\virtusa-github" -Recurse -Filter ".env" -File |
+Get-ChildItem -Path "E:\observe-github" -Recurse -Filter ".env" -File |
 Select-Object -ExpandProperty FullName |
 Sort-Object
 ```
 
 Expected output should include exactly these 7 files:
 
-- `E:\virtusa-github\Web_Server\.env`
-- `E:\virtusa-github\Coding_Environment_Service\.env`
-- `E:\virtusa-github\Core_Backend_Services\JIT_Generator_Service\.env`
-- `E:\virtusa-github\Core_Backend_Services\LLM_Morphing_Service\.env`
-- `E:\virtusa-github\Rendering_service\report_agent\.env`
-- `E:\virtusa-github\Report_Generation_service\.env`
-- `E:\virtusa-github\EXE-Application\.env`
+- `E:\observe-github\Web_Server\.env`
+- `E:\observe-github\Coding_Environment_Service\.env`
+- `E:\observe-github\Core_Backend_Services\JIT_Generator_Service\.env`
+- `E:\observe-github\Core_Backend_Services\LLM_Morphing_Service\.env`
+- `E:\observe-github\Rendering_service\report_agent\.env`
+- `E:\observe-github\Report_Generation_service\.env`
+- `E:\observe-github\EXE-Application\.env`
 
 ## Step 4: Quick Validation Per Service
 
@@ -82,19 +82,19 @@ Optional checks to ensure all required keys are present:
 
 ```powershell
 # Example: check key presence in one env file
-Select-String -Path "E:\virtusa-github\Web_Server\.env" -Pattern "DATABASE_URL|SUPABASE_URL|SUPABASE_KEY"
+Select-String -Path "E:\observe-github\Web_Server\.env" -Pattern "DATABASE_URL|SUPABASE_URL|SUPABASE_KEY"
 
-Select-String -Path "E:\virtusa-github\Coding_Environment_Service\.env" -Pattern "SECRET_KEY|DATABASE_URL|REDIS_URL"
+Select-String -Path "E:\observe-github\Coding_Environment_Service\.env" -Pattern "SECRET_KEY|DATABASE_URL|REDIS_URL"
 
-Select-String -Path "E:\virtusa-github\Core_Backend_Services\JIT_Generator_Service\.env" -Pattern "GROQ_API_KEY|GEMINI_API_KEY"
+Select-String -Path "E:\observe-github\Core_Backend_Services\JIT_Generator_Service\.env" -Pattern "GROQ_API_KEY|GEMINI_API_KEY"
 
-Select-String -Path "E:\virtusa-github\Core_Backend_Services\LLM_Morphing_Service\.env" -Pattern "GROQ_API_KEY|GEMINI_API_KEY"
+Select-String -Path "E:\observe-github\Core_Backend_Services\LLM_Morphing_Service\.env" -Pattern "GROQ_API_KEY|GEMINI_API_KEY"
 
-Select-String -Path "E:\virtusa-github\Rendering_service\report_agent\.env" -Pattern "GROQ_API_KEY|SUPABASE_SERVICE_ROLE_KEY"
+Select-String -Path "E:\observe-github\Rendering_service\report_agent\.env" -Pattern "GROQ_API_KEY|SUPABASE_SERVICE_ROLE_KEY"
 
-Select-String -Path "E:\virtusa-github\Report_Generation_service\.env" -Pattern "DATABASE_URL|SUPABASE_SERVICE_ROLE_KEY"
+Select-String -Path "E:\observe-github\Report_Generation_service\.env" -Pattern "DATABASE_URL|SUPABASE_SERVICE_ROLE_KEY"
 
-Select-String -Path "E:\virtusa-github\EXE-Application\.env" -Pattern "VIRTUSA_SERVER_URL|VIRTUSA_PROCTOR_SECRET"
+Select-String -Path "E:\observe-github\EXE-Application\.env" -Pattern "OBSERVE_SERVER_URL|OBSERVE_PROCTOR_SECRET"
 ```
 
 ## Troubleshooting
@@ -109,4 +109,5 @@ Select-String -Path "E:\virtusa-github\EXE-Application\.env" -Pattern "VIRTUSA_S
 
 3. Missing keys:
 - Compare each `.env` with corresponding `.env.example` in the same service.
+
 

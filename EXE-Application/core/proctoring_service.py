@@ -158,11 +158,11 @@ class ProctoringService:
         self._alert_active_state: dict[str, dict] = {}
         self._alert_recount_interval = max(
             30.0,
-            float(os.environ.get("VIRTUSA_ALERT_RECOUNT_INTERVAL_SEC", "90") or "90"),
+            float(os.environ.get("OBSERVE_ALERT_RECOUNT_INTERVAL_SEC", "90") or "90"),
         )
         self._max_violation_increment_per_poll = max(
             1,
-            int(os.environ.get("VIRTUSA_MAX_VIOLATION_INCREMENT_PER_POLL", "1") or "1"),
+            int(os.environ.get("OBSERVE_MAX_VIOLATION_INCREMENT_PER_POLL", "1") or "1"),
         )
         self._exam_metadata = {
             "username": "",
@@ -177,24 +177,24 @@ class ProctoringService:
         self._env_check_interval = 10.0  # Check environment every 10 seconds
 
         # Runtime policy toggles (production defaults).
-        self._enable_firewall_isolation = (os.environ.get("VIRTUSA_ENABLE_FIREWALL_ISOLATION", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._enable_keyboard_lockdown = (os.environ.get("VIRTUSA_ENABLE_KEYBOARD_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._lockdown_block_input = (os.environ.get("VIRTUSA_LOCKDOWN_BLOCK_INPUT", "0").strip().lower() in ("1", "true", "yes", "on"))
-        self._strict_touchpad_lockdown = (os.environ.get("VIRTUSA_STRICT_TOUCHPAD_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._strict_os_lockdown = (os.environ.get("VIRTUSA_STRICT_OS_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._require_keyboard_lockdown = (os.environ.get("VIRTUSA_REQUIRE_KEYBOARD_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._enable_runtime_auto_terminate = (os.environ.get("VIRTUSA_ENABLE_RUNTIME_AUTO_TERMINATE", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._auto_terminate_cooldown_sec = max(3.0, float(os.environ.get("VIRTUSA_RUNTIME_AUTO_TERMINATE_COOLDOWN_SEC", "3") or "3"))
-        self._auto_terminate_max_per_scan = max(1, int(os.environ.get("VIRTUSA_RUNTIME_AUTO_TERMINATE_MAX_PER_SCAN", "10") or "10"))
+        self._enable_firewall_isolation = (os.environ.get("OBSERVE_ENABLE_FIREWALL_ISOLATION", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._enable_keyboard_lockdown = (os.environ.get("OBSERVE_ENABLE_KEYBOARD_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._lockdown_block_input = (os.environ.get("OBSERVE_LOCKDOWN_BLOCK_INPUT", "0").strip().lower() in ("1", "true", "yes", "on"))
+        self._strict_touchpad_lockdown = (os.environ.get("OBSERVE_STRICT_TOUCHPAD_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._strict_os_lockdown = (os.environ.get("OBSERVE_STRICT_OS_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._require_keyboard_lockdown = (os.environ.get("OBSERVE_REQUIRE_KEYBOARD_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._enable_runtime_auto_terminate = (os.environ.get("OBSERVE_ENABLE_RUNTIME_AUTO_TERMINATE", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._auto_terminate_cooldown_sec = max(3.0, float(os.environ.get("OBSERVE_RUNTIME_AUTO_TERMINATE_COOLDOWN_SEC", "3") or "3"))
+        self._auto_terminate_max_per_scan = max(1, int(os.environ.get("OBSERVE_RUNTIME_AUTO_TERMINATE_MAX_PER_SCAN", "10") or "10"))
         self._runtime_quarantine: dict[int, float] = {}
         self._runtime_quarantine_ttl_sec = 180.0
-        self._enforce_server_decision = (os.environ.get("VIRTUSA_ENFORCE_SERVER_DECISION", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._enforce_server_decision = (os.environ.get("OBSERVE_ENFORCE_SERVER_DECISION", "1").strip().lower() in ("1", "true", "yes", "on"))
 
         # Full-lockdown controls (process suppression + overlay control).
-        self._enable_full_lockdown = (os.environ.get("VIRTUSA_ENABLE_FULL_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._full_lockdown_close_all_apps = (os.environ.get("VIRTUSA_CLOSE_ALL_APPS_EXCEPT_SELF", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._full_lockdown_scan_interval = max(2.0, float(os.environ.get("VIRTUSA_FULL_LOCKDOWN_SCAN_INTERVAL_SEC", "3.0") or "3.0"))
-        allow_raw = (os.environ.get("VIRTUSA_FULL_LOCKDOWN_ALLOWLIST", "") or "").strip().lower()
+        self._enable_full_lockdown = (os.environ.get("OBSERVE_ENABLE_FULL_LOCKDOWN", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._full_lockdown_close_all_apps = (os.environ.get("OBSERVE_CLOSE_ALL_APPS_EXCEPT_SELF", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._full_lockdown_scan_interval = max(2.0, float(os.environ.get("OBSERVE_FULL_LOCKDOWN_SCAN_INTERVAL_SEC", "3.0") or "3.0"))
+        allow_raw = (os.environ.get("OBSERVE_FULL_LOCKDOWN_ALLOWLIST", "") or "").strip().lower()
         self._full_lockdown_allowlist = {x.strip() for x in allow_raw.split(",") if x.strip()}
         own_name = (os.path.basename(sys.executable or "") or "").strip().lower()
         if own_name:
@@ -242,12 +242,12 @@ class ProctoringService:
         self._full_lockdown_quarantine: dict[str, float] = {}
         self._full_lockdown_kill_cooldown_sec = max(
             4.0,
-            float(os.environ.get("VIRTUSA_FULL_LOCKDOWN_KILL_COOLDOWN_SEC", "8") or "8"),
+            float(os.environ.get("OBSERVE_FULL_LOCKDOWN_KILL_COOLDOWN_SEC", "8") or "8"),
         )
         default_max_kills = "20" if self._full_lockdown_close_all_apps else "4"
         self._full_lockdown_max_kills_per_scan = max(
             1,
-            int(os.environ.get("VIRTUSA_FULL_LOCKDOWN_MAX_KILLS_PER_SCAN", default_max_kills) or default_max_kills),
+            int(os.environ.get("OBSERVE_FULL_LOCKDOWN_MAX_KILLS_PER_SCAN", default_max_kills) or default_max_kills),
         )
         self._focus_guard_callback = None
 
@@ -599,7 +599,7 @@ class ProctoringService:
                         )
                         raise RuntimeError(
                             "Keyboard lockdown is required but did not engage. "
-                            f"Exam start blocked by VIRTUSA_REQUIRE_KEYBOARD_LOCKDOWN.{detail}"
+                            f"Exam start blocked by OBSERVE_REQUIRE_KEYBOARD_LOCKDOWN.{detail}"
                         )
 
             if engage_security and self._enable_full_lockdown:
@@ -745,7 +745,7 @@ class ProctoringService:
                         logger.warning("Backend URL not set for whitelist", module="proctoring_service")
 
                     # Optional extra allowlist URLs supplied via environment variable.
-                    extra_urls_raw = os.environ.get("VIRTUSA_ADDITIONAL_WHITELIST_URLS", "")
+                    extra_urls_raw = os.environ.get("OBSERVE_ADDITIONAL_WHITELIST_URLS", "")
                     for raw in (u.strip() for u in extra_urls_raw.split(",") if u.strip()):
                         self.firewall.add_backend_whitelist(raw)
                         print(f"[Security] Extra URL pre-whitelisted: {raw[:50]}...")
@@ -1785,3 +1785,4 @@ class ProctoringService:
         if not snapshot:
             snapshot = dict(self._last_scan_result or {})
         return snapshot
+

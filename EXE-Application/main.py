@@ -260,10 +260,10 @@ class ObserveProctorApp:
         self.backend_url = (
             get_backend_url()
             if get_backend_url
-            else (os.environ.get("VIRTUSA_SERVER_URL") or os.environ.get("VIRTUSA_BACKEND_URL") or "")
+            else (os.environ.get("OBSERVE_SERVER_URL") or os.environ.get("OBSERVE_BACKEND_URL") or "")
         )
         if not self.backend_url:
-            raise RuntimeError("Missing backend URL. Set VIRTUSA_SERVER_URL in .env for production startup.")
+            raise RuntimeError("Missing backend URL. Set OBSERVE_SERVER_URL in .env for production startup.")
         self.proctoring_service = (
             ProctoringService(backend_url=self.backend_url) if ProctoringService else None
         )
@@ -279,8 +279,8 @@ class ObserveProctorApp:
         self._critical_alert_last_ts: dict[str, float] = {}
         self._critical_alert_cooldown_seconds = 12.0
         self._cleanup_started = False
-        self._force_exam_topmost = (os.environ.get("VIRTUSA_FORCE_EXAM_TOPMOST", "1").strip().lower() in ("1", "true", "yes", "on"))
-        self._focus_guard_interval_ms = max(500, int(os.environ.get("VIRTUSA_FOCUS_GUARD_INTERVAL_MS", "1200") or "1200"))
+        self._force_exam_topmost = (os.environ.get("OBSERVE_FORCE_EXAM_TOPMOST", "1").strip().lower() in ("1", "true", "yes", "on"))
+        self._focus_guard_interval_ms = max(500, int(os.environ.get("OBSERVE_FOCUS_GUARD_INTERVAL_MS", "1200") or "1200"))
         self._focus_guard_timer = QTimer()
         self._focus_guard_timer.setInterval(self._focus_guard_interval_ms)
         self._focus_guard_timer.timeout.connect(self._enforce_exam_focus)
@@ -996,3 +996,4 @@ def _ensure_admin_privileges() -> bool:
 
 if __name__ == "__main__":
     main()
+

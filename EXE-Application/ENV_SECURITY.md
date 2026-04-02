@@ -4,10 +4,10 @@
 
 Previously, the `.env` file was copied to the `dist/` folder as an external file after building the EXE. This allowed users to modify security settings at runtime, including:
 
-- `VIRTUSA_ENABLE_KEYBOARD_LOCKDOWN`
-- `VIRTUSA_STRICT_OS_LOCKDOWN`  
-- `VIRTUSA_ENABLE_FULL_LOCKDOWN`
-- `VIRTUSA_ENABLE_RUNTIME_AUTO_TERMINATE`
+- `OBSERVE_ENABLE_KEYBOARD_LOCKDOWN`
+- `OBSERVE_STRICT_OS_LOCKDOWN`  
+- `OBSERVE_ENABLE_FULL_LOCKDOWN`
+- `OBSERVE_ENABLE_RUNTIME_AUTO_TERMINATE`
 - Any other security toggles
 
 This was a critical security vulnerability.
@@ -32,7 +32,7 @@ This was a critical security vulnerability.
 ## Security Benefits
 
 1. **Immutable Configuration**: Users cannot modify deployed security settings
-2. **No External Exposure**: Security keys (VIRTUSA_PROCTOR_SECRET) are embedded in binary
+2. **No External Exposure**: Security keys (OBSERVE_PROCTOR_SECRET) are embedded in binary
 3. **Integrity**: Even if someone extracts the EXE, the `_internal` path structure makes tampering harder
 4. **Audit Trail**: Tamper detection and HMAC-chained audit logging will catch any modified app behavior
 
@@ -52,3 +52,4 @@ For development, `env_loader.py` still supports loading from:
 3. Current working directory `.env`
 
 Set `ENV_FILE=/path/to/.env` to override for development.
+

@@ -155,7 +155,7 @@ class SandboxExecutor:
                     run_id=run_id,
                 )
             except RuntimeError as exc:
-                allow_fallback = os.getenv("VIRTUSA_ALLOW_LOCAL_EXEC_FALLBACK", "1").lower() in ("1", "true", "yes", "on")
+                allow_fallback = os.getenv("OBSERVE_ALLOW_LOCAL_EXEC_FALLBACK", "1").lower() in ("1", "true", "yes", "on")
                 if not allow_fallback:
                     raise
                 log.warning(
@@ -394,3 +394,4 @@ class SandboxExecutor:
 
 
 sandbox_executor = SandboxExecutor()
+

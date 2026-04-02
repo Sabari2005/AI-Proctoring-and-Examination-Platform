@@ -130,7 +130,7 @@ def _mac_key_legacy() -> bytes:
         pass
     raw = "|".join(parts).encode("utf-8")
     machine_fp = hashlib.sha256(raw).digest()
-    return hmac.new(machine_fp, b"virtusa_audit_log_chain_key_v2", hashlib.sha256).digest()
+    return hmac.new(machine_fp, b"observe_audit_log_chain_key_v2", hashlib.sha256).digest()
 
 
 _dpapi_key = _load_or_create_dpapi_key()
@@ -260,3 +260,4 @@ class SecureAuditLog:
             prev = stored_mac
 
         return True, f"Chain intact ({len(lines)} entries)."
+

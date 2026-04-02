@@ -166,17 +166,17 @@ Important variables used by the app and/or local mock server.
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `VIRTUSA_SERVER_URL` | Yes | Canonical backend URL for desktop app (HTTPS, approved Lightning host enforced). |
-| `VIRTUSA_BACKEND_URL` | Optional | Legacy fallback backend URL key. |
-| `VIRTUSA_PROCTOR_SECRET` | Yes | Shared secret for HMAC signatures (minimum 24 chars enforced). |
-| `VIRTUSA_ADDITIONAL_WHITELIST_URLS` | Optional | Additional allowed outbound URLs for restricted mode. |
-| `VIRTUSA_TLS_PIN_SHA256` | Optional | Certificate pin value for stricter TLS checks. |
-| `VIRTUSA_ENABLE_KEYBOARD_LOCKDOWN` | Optional | Enable keyboard/shell lockdown layer. |
-| `VIRTUSA_STRICT_OS_LOCKDOWN` | Optional | Apply stricter shell policy controls during exam. |
-| `VIRTUSA_ENABLE_FULL_LOCKDOWN` | Optional | Enable full runtime process suppression mode. |
-| `VIRTUSA_ENABLE_RUNTIME_AUTO_TERMINATE` | Optional | Auto-kill suspicious processes when detected. |
-| `VIRTUSA_FORCE_EXAM_TOPMOST` | Optional | Force exam window topmost behavior. |
-| `VIRTUSA_FOCUS_GUARD_INTERVAL_MS` | Optional | Focus enforcement timer interval. |
+| `OBSERVE_SERVER_URL` | Yes | Canonical backend URL for desktop app (HTTPS, approved Lightning host enforced). |
+| `OBSERVE_BACKEND_URL` | Optional | Legacy fallback backend URL key. |
+| `OBSERVE_PROCTOR_SECRET` | Yes | Shared secret for HMAC signatures (minimum 24 chars enforced). |
+| `OBSERVE_ADDITIONAL_WHITELIST_URLS` | Optional | Additional allowed outbound URLs for restricted mode. |
+| `OBSERVE_TLS_PIN_SHA256` | Optional | Certificate pin value for stricter TLS checks. |
+| `OBSERVE_ENABLE_KEYBOARD_LOCKDOWN` | Optional | Enable keyboard/shell lockdown layer. |
+| `OBSERVE_STRICT_OS_LOCKDOWN` | Optional | Apply stricter shell policy controls during exam. |
+| `OBSERVE_ENABLE_FULL_LOCKDOWN` | Optional | Enable full runtime process suppression mode. |
+| `OBSERVE_ENABLE_RUNTIME_AUTO_TERMINATE` | Optional | Auto-kill suspicious processes when detected. |
+| `OBSERVE_FORCE_EXAM_TOPMOST` | Optional | Force exam window topmost behavior. |
+| `OBSERVE_FOCUS_GUARD_INTERVAL_MS` | Optional | Focus enforcement timer interval. |
 | `SERVER_PORT` | Local server | Port for `server/mock_server.py` (default 8080). |
 | `DATABASE_URL` | Local server | Database connection for mock server data. |
 | `SUPABASE_URL` | Optional | Supabase storage endpoint for evidence/log uploads. |
@@ -201,7 +201,7 @@ All sensitive exam-session calls are signed and include anti-replay metadata (se
 ## Security Model
 
 - Strong backend URL validation in `core/backend_config.py`.
-- HMAC signature checks using `VIRTUSA_PROCTOR_SECRET`.
+- HMAC signature checks using `OBSERVE_PROCTOR_SECRET`.
 - Replay protection via sequence/timestamp/nonce controls.
 - Runtime hardening controls in `core/lockdown.py` and `core/proctoring_service.py`.
 - Process monitoring and suspicious keyword checks.
@@ -245,9 +245,9 @@ build_log.txt
 ## Troubleshooting
 
 - Build fails with backend URL error:
-  - Set `VIRTUSA_SERVER_URL` to an HTTPS Lightning AI host allowed by validation.
+  - Set `OBSERVE_SERVER_URL` to an HTTPS Lightning AI host allowed by validation.
 - Build fails with secret error:
-  - Set `VIRTUSA_PROCTOR_SECRET` with at least 24 characters.
+  - Set `OBSERVE_PROCTOR_SECRET` with at least 24 characters.
 - Camera/vision unavailable:
   - Ensure webcam access permissions and required OpenCV/MediaPipe packages are installed.
 - Lockdown features not working:
@@ -264,7 +264,7 @@ You must verify this service has a valid `.env` before startup.
 
 ```powershell
 Test-Path "EXE-Application/.env"
-Select-String -Path "EXE-Application/.env" -Pattern "VIRTUSA_SERVER_URL|VIRTUSA_PROCTOR_SECRET"
+Select-String -Path "EXE-Application/.env" -Pattern "OBSERVE_SERVER_URL|OBSERVE_PROCTOR_SECRET"
 ```
 
 If the file is missing, create it from `EXE-Application/.env.example` and populate real values.
@@ -272,7 +272,7 @@ If the file is missing, create it from `EXE-Application/.env.example` and popula
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- EXE-Application/             <-- current service
 |- Web_Server/
 |- Coding_Environment_Service/
@@ -284,3 +284,4 @@ virtusa-github/
 |- Report_Generation_service/
 |- observe/
 ```
+

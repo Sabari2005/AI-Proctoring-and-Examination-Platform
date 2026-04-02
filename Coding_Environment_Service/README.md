@@ -154,7 +154,7 @@ Primary configuration is in `app/config.py` via environment variables.
 | `MAX_OUTPUT_BYTES` | `65536` | Output truncation limit |
 | `SANDBOX_IMAGE_PREFIX` | `proctor-sandbox` | Sandbox image naming prefix |
 | `DOCKER_NETWORK` | `none` | Container network mode |
-| `VIRTUSA_INTERNAL_SECRET` | empty | Optional shared secret for `/internal/run` |
+| `OBSERVE_INTERNAL_SECRET` | empty | Optional shared secret for `/internal/run` |
 
 Compose-level variables also include DB/Redis/Celery settings for legacy and horizontal infrastructure paths.
 
@@ -212,7 +212,7 @@ If the file is missing, create it from `Coding_Environment_Service/.env.example`
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- Coding_Environment_Service/  <-- current service
 |- Web_Server/
 |- Core_Backend_Services/
@@ -224,3 +224,4 @@ virtusa-github/
 |- EXE-Application/
 |- observe/
 ```
+

@@ -127,13 +127,13 @@ class LoginScreen(QWidget):
                 server_url = get_backend_url()
             else:
                 server_url = (
-                    os.environ.get("VIRTUSA_SERVER_URL")
-                    or os.environ.get("VIRTUSA_BACKEND_URL")
+                    os.environ.get("OBSERVE_SERVER_URL")
+                    or os.environ.get("OBSERVE_BACKEND_URL")
                     or ""
                 )
         if not server_url:
             raise RuntimeError(
-                "Missing backend URL. Set VIRTUSA_SERVER_URL for production login."
+                "Missing backend URL. Set OBSERVE_SERVER_URL for production login."
             )
 
         self.server_url          = server_url
@@ -575,3 +575,4 @@ class LoginScreen(QWidget):
             self.connectivity_checker.stop()
             self.connectivity_checker.wait(2000)
         super().closeEvent(event)
+

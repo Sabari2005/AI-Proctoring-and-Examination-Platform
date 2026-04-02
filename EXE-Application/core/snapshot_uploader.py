@@ -57,10 +57,10 @@ def _get_shared_secret() -> bytes:
     Derive shared secret for HMAC signing.
     Must match backend secret policy to avoid unsigned/invalid evidence uploads.
     """
-    secret = (os.environ.get("VIRTUSA_PROCTOR_SECRET") or "").strip()
+    secret = (os.environ.get("OBSERVE_PROCTOR_SECRET") or "").strip()
     if not secret or len(secret) < 24:
         raise RuntimeError(
-            "VIRTUSA_PROCTOR_SECRET is not set or too short. "
+            "OBSERVE_PROCTOR_SECRET is not set or too short. "
             "Evidence uploads will fail. Set this in your .env file."
         )
     return secret.encode("utf-8")
@@ -304,8 +304,8 @@ class SnapshotUploader:
             body    = json.dumps(payload, default=str).encode("utf-8")
             headers = {
                 "Content-Type":        "application/json",
-                "User-Agent":          "VirtusaProctorClient/2.0",
-                "X-Virtusa-Signature": _sign(body, self._shared_secret),
+                "User-Agent":          "ObserveProctorClient/2.0",
+                "X-Observe-Signature": _sign(body, self._shared_secret),
             }
             req = urllib.request.Request(
                 f"{self._backend_url}/v1/evidence",
@@ -353,3 +353,4 @@ class SnapshotUploader:
         with self._state_lock:
             thread = self._thread
             return bool(thread and thread.is_alive())
+

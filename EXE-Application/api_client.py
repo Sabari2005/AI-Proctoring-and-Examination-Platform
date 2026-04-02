@@ -119,11 +119,11 @@ class ProctorClient:
 
         headers: dict[str, str] = {"Content-Type": "application/json"}
         if sign:
-            headers["X-Virtusa-Signature"] = self._compute_sig(body)
+            headers["X-Observe-Signature"] = self._compute_sig(body)
         state = self._snapshot_state()
         hw_fp = state.get("hw_fp")
         if hw_fp:
-            headers["X-Virtusa-HW-FP"] = str(hw_fp)
+            headers["X-Observe-HW-FP"] = str(hw_fp)
 
         url = f"{state['base_url']}{path}"
         

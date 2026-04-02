@@ -378,7 +378,7 @@ If the file is missing, create it from `Core_Backend_Services/JIT_Generator_Serv
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- Core_Backend_Services/
 |  |- JIT_Generator_Service/    <-- current service
 |  |- LLM_Morphing_Service/
@@ -390,3 +390,4 @@ virtusa-github/
 |- EXE-Application/
 |- observe/
 ```
+

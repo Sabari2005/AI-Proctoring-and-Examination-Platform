@@ -19,7 +19,7 @@ log = structlog.get_logger()
 
 def _verify_internal_secret(header_secret: str) -> bool:
     """Verify internal secret from mock_server (optional)."""
-    expected = os.getenv("VIRTUSA_INTERNAL_SECRET", "").strip()
+    expected = os.getenv("OBSERVE_INTERNAL_SECRET", "").strip()
     if not expected or len(expected) < 24:
         return False
     return hmac.compare_digest(header_secret, expected)
@@ -141,7 +141,7 @@ async def execute_code_internal(
     Same execution logic, adds verification header.
     """
     # Optional: Verify internal secret if configured
-    secret_header = request.headers.get("X-Virtusa-Secret", "").strip()
+    secret_header = request.headers.get("X-Observe-Secret", "").strip()
     if secret_header:
         if not _verify_internal_secret(secret_header):
             log.warning("invalid_internal_secret", client_ip=request.client.host if request.client else "unknown")
@@ -149,3 +149,4 @@ async def execute_code_internal(
 
     # Same execution as public endpoint
     return await execute_code(request, body)
+

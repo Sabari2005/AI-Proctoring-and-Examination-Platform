@@ -117,21 +117,21 @@ MAX_SESSIONS       = 10_000
 MAX_RATE_IPS       = 5_000
 RATE_LIMIT_COUNT   = 10
 RATE_LIMIT_WINDOW  = 60               # seconds
-LOGIN_RATE_LIMIT_IP_COUNT = int(os.environ.get("VIRTUSA_LOGIN_RATE_LIMIT_IP_COUNT", "12") or 12)
-LOGIN_RATE_LIMIT_EMAIL_COUNT = int(os.environ.get("VIRTUSA_LOGIN_RATE_LIMIT_EMAIL_COUNT", "20") or 20)
-LOGIN_RATE_LIMIT_WINDOW = int(os.environ.get("VIRTUSA_LOGIN_RATE_LIMIT_WINDOW_SEC", "60") or 60)
-LOGIN_ACTIVE_CHECK_INTERVAL_SECONDS = int(os.environ.get("VIRTUSA_LOGIN_ACTIVE_CHECK_INTERVAL_SEC", "30") or 30)
+LOGIN_RATE_LIMIT_IP_COUNT = int(os.environ.get("OBSERVE_LOGIN_RATE_LIMIT_IP_COUNT", "12") or 12)
+LOGIN_RATE_LIMIT_EMAIL_COUNT = int(os.environ.get("OBSERVE_LOGIN_RATE_LIMIT_EMAIL_COUNT", "20") or 20)
+LOGIN_RATE_LIMIT_WINDOW = int(os.environ.get("OBSERVE_LOGIN_RATE_LIMIT_WINDOW_SEC", "60") or 60)
+LOGIN_ACTIVE_CHECK_INTERVAL_SECONDS = int(os.environ.get("OBSERVE_LOGIN_ACTIVE_CHECK_INTERVAL_SEC", "30") or 30)
 HEALTH_DB_CHECK_INTERVAL_SECONDS = max(1, int(os.environ.get("HEALTH_DB_CHECK_INTERVAL_SECONDS", "5")))
-REQUEST_MAX_WORKERS = max(4, int(os.environ.get("VIRTUSA_SERVER_MAX_WORKERS", "64") or 64))
-REQUEST_QUEUE_SIZE = max(16, int(os.environ.get("VIRTUSA_SERVER_REQUEST_QUEUE", "128") or 128))
-REQUEST_HANDLER_TIMEOUT_SECONDS = max(5.0, float(os.environ.get("VIRTUSA_SERVER_REQUEST_TIMEOUT_SEC", "30") or 30))
-SESSION_CLEANUP_INTERVAL_SECONDS = max(5, int(os.environ.get("VIRTUSA_SESSION_CLEANUP_INTERVAL_SEC", "15") or 15))
-SESSION_PURGE_MIN_INTERVAL_SECONDS = max(2, int(os.environ.get("VIRTUSA_SESSION_PURGE_MIN_INTERVAL_SEC", "5") or 5))
+REQUEST_MAX_WORKERS = max(4, int(os.environ.get("OBSERVE_SERVER_MAX_WORKERS", "64") or 64))
+REQUEST_QUEUE_SIZE = max(16, int(os.environ.get("OBSERVE_SERVER_REQUEST_QUEUE", "128") or 128))
+REQUEST_HANDLER_TIMEOUT_SECONDS = max(5.0, float(os.environ.get("OBSERVE_SERVER_REQUEST_TIMEOUT_SEC", "30") or 30))
+SESSION_CLEANUP_INTERVAL_SECONDS = max(5, int(os.environ.get("OBSERVE_SESSION_CLEANUP_INTERVAL_SEC", "15") or 15))
+SESSION_PURGE_MIN_INTERVAL_SECONDS = max(2, int(os.environ.get("OBSERVE_SESSION_PURGE_MIN_INTERVAL_SEC", "5") or 5))
 CLIENT_LOGS_DIR = _SERVER_DIR / "client_logs"
 EVIDENCE_FRAMES_DIR = _SERVER_DIR / "evidence_frames"
-IP_BINDING_MODE = (os.environ.get("VIRTUSA_IP_BINDING_MODE", "private-any") or "private-any").strip().lower()
-TRUST_PROXY_TLS = os.environ.get("VIRTUSA_TRUST_PROXY_TLS", "1").lower() in ("1", "true", "yes", "on")
-ALLOW_NONCE_AUTO_ENROLL = os.environ.get("VIRTUSA_ALLOW_NONCE_AUTO_ENROLL", "1").lower() in ("1", "true", "yes", "on")
+IP_BINDING_MODE = (os.environ.get("OBSERVE_IP_BINDING_MODE", "private-any") or "private-any").strip().lower()
+TRUST_PROXY_TLS = os.environ.get("OBSERVE_TRUST_PROXY_TLS", "1").lower() in ("1", "true", "yes", "on")
+ALLOW_NONCE_AUTO_ENROLL = os.environ.get("OBSERVE_ALLOW_NONCE_AUTO_ENROLL", "1").lower() in ("1", "true", "yes", "on")
 JIT_SERVICE_BASE_URL = (os.environ.get("JIT_SERVICE_BASE_URL") or "http://127.0.0.1:8002/v1").strip().rstrip("/")
 JIT_SERVICE_TIMEOUT_SECONDS = float(os.environ.get("JIT_SERVICE_TIMEOUT_SECONDS", "20"))
 REPORT_SERVICE_BASE_URL = (os.environ.get("REPORT_SERVICE_BASE_URL") or "http://127.0.0.1:8010").strip().rstrip("/")
@@ -147,18 +147,18 @@ EVIDENCE_BUCKET           = (os.environ.get("EVIDENCE_BUCKET") or "evidence-fram
 EXAM_LOGS_BUCKET          = (os.environ.get("EXAM_LOGS_BUCKET") or "exam-logs").strip()
 
 # Comma-separated SHA-256 hashes supplied by server security policy.
-_RAW_BLACKLISTED_SHA256 = (os.environ.get("VIRTUSA_BLACKLISTED_SHA256") or "").strip()
+_RAW_BLACKLISTED_SHA256 = (os.environ.get("OBSERVE_BLACKLISTED_SHA256") or "").strip()
 SERVER_BLACKLISTED_SHA256: list[str] = []
 for _item in [x.strip().lower() for x in _RAW_BLACKLISTED_SHA256.split(",") if x.strip()]:
     if len(_item) == 64 and all(ch in "0123456789abcdef" for ch in _item):
         SERVER_BLACKLISTED_SHA256.append(_item)
 
 # When enabled, reject hardware fingerprints not present in enrolled registry.
-_STRICT_ENROLLMENT = os.environ.get("VIRTUSA_STRICT_ENROLLMENT", "1").lower() in ("1", "true", "yes")
-_SECRET_RAW = (os.environ.get("VIRTUSA_PROCTOR_SECRET") or "").strip()
+_STRICT_ENROLLMENT = os.environ.get("OBSERVE_STRICT_ENROLLMENT", "1").lower() in ("1", "true", "yes")
+_SECRET_RAW = (os.environ.get("OBSERVE_PROCTOR_SECRET") or "").strip()
 if not _SECRET_RAW or _SECRET_RAW == "dev-shared-secret-change-me" or len(_SECRET_RAW) < 24:
     raise RuntimeError(
-        "Invalid VIRTUSA_PROCTOR_SECRET. Set a strong production secret (min 24 chars) in server/.env"
+        "Invalid OBSERVE_PROCTOR_SECRET. Set a strong production secret (min 24 chars) in server/.env"
     )
 CLIENT_LOGS_DIR.mkdir(parents=True, exist_ok=True)
 EVIDENCE_FRAMES_DIR.mkdir(parents=True, exist_ok=True)
@@ -753,7 +753,7 @@ def _create_self_signed_cert(cert_file: str, key_file: str) -> bool:
         )
         subject = issuer = x509.Name([
             x509.NameAttribute(NameOID.COUNTRY_NAME, "US"),
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Virtusa"),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Observe"),
             x509.NameAttribute(NameOID.COMMON_NAME, "localhost"),
         ])
         cert = (
@@ -1885,7 +1885,7 @@ class ProctorHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Virtusa-Signature")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Observe-Signature")
         self.end_headers()
 
     def do_GET(self):
@@ -1907,8 +1907,8 @@ class ProctorHandler(BaseHTTPRequestHandler):
         path           = urlparse(self.path).path
         content_length = int(self.headers.get("Content-Length", 0))
 
-        default_max_body = int(os.environ.get("VIRTUSA_MAX_REQUEST_BODY_BYTES", str(1_048_576)) or 1_048_576)
-        evidence_max_body = int(os.environ.get("VIRTUSA_MAX_EVIDENCE_BODY_BYTES", str(8_388_608)) or 8_388_608)
+        default_max_body = int(os.environ.get("OBSERVE_MAX_REQUEST_BODY_BYTES", str(1_048_576)) or 1_048_576)
+        evidence_max_body = int(os.environ.get("OBSERVE_MAX_EVIDENCE_BODY_BYTES", str(8_388_608)) or 8_388_608)
         max_body = evidence_max_body if path == "/v1/evidence/save-frames" else default_max_body
 
         if content_length > max_body:
@@ -1923,7 +1923,7 @@ class ProctorHandler(BaseHTTPRequestHandler):
             self._send_json({"error": "Invalid JSON"}, 400)
             return
 
-        require_tls = os.environ.get("VIRTUSA_REQUIRE_TLS", "1").lower() in ("1", "true", "yes", "on")
+        require_tls = os.environ.get("OBSERVE_REQUIRE_TLS", "1").lower() in ("1", "true", "yes", "on")
         if require_tls and not self._is_tls_or_trusted_proxy_tls():
             self._send_json({"error": "tls_required"}, 426)
             return
@@ -1951,11 +1951,11 @@ class ProctorHandler(BaseHTTPRequestHandler):
     # ── Signature verification ────────────────────────────────────────────────
 
     def _verify_signature(self, raw_body: bytes) -> bool:
-        incoming = (self.headers.get("X-Virtusa-Signature", "") or "").strip().lower()
+        incoming = (self.headers.get("X-Observe-Signature", "") or "").strip().lower()
         if not incoming:
             return False
 
-        # Strict signature policy: signature must be HMAC(raw_body, VIRTUSA_PROCTOR_SECRET).
+        # Strict signature policy: signature must be HMAC(raw_body, OBSERVE_PROCTOR_SECRET).
         # Never accept alternate keys derived from client-controlled headers.
         if len(incoming) != 64 or any(ch not in "0123456789abcdef" for ch in incoming):
             return False
@@ -3770,7 +3770,7 @@ class ProctorHandler(BaseHTTPRequestHandler):
 
         # Call proctored-code-env backend via HTTP
         backend_url = os.getenv("CODING_BACKEND_URL", "http://localhost:8001").rstrip("/")
-        internal_secret = os.getenv("VIRTUSA_INTERNAL_SECRET", "").strip()
+        internal_secret = os.getenv("OBSERVE_INTERNAL_SECRET", "").strip()
         verify_tls = os.getenv("CODING_BACKEND_VERIFY_TLS", "1").lower() in ("1", "true", "yes", "on")
         
         if not backend_url or backend_url == "http://localhost:8001":
@@ -3786,7 +3786,7 @@ class ProctorHandler(BaseHTTPRequestHandler):
                 "question_id": question_id,
             }
             headers = {
-                "X-Virtusa-Secret": internal_secret,
+                "X-Observe-Secret": internal_secret,
                 "X-Forwarded-For": ip,
                 "Content-Type": "application/json",
             }
@@ -4206,7 +4206,7 @@ def start_server(port: int, use_tls: bool = False, require_tls: bool = False):
         certs_available = _create_self_signed_cert(cert_file, key_file)
         if not certs_available:
             if require_tls and not TRUST_PROXY_TLS:
-                raise RuntimeError("TLS certificate unavailable and VIRTUSA_REQUIRE_TLS is enabled.")
+                raise RuntimeError("TLS certificate unavailable and OBSERVE_REQUIRE_TLS is enabled.")
             print("[SERVER] TLS certificate unavailable, falling back to HTTP.")
             use_tls  = False
             protocol = "HTTP"
@@ -4229,7 +4229,7 @@ def start_server(port: int, use_tls: bool = False, require_tls: bool = False):
     cleanup_thread.start()
 
     print("\n" + "=" * 80)
-    print("  Virtusa ObserveProctor - Secure Mock Backend (DB-backed)")
+    print("  Observe ObserveProctor - Secure Mock Backend (DB-backed)")
     print("=" * 80)
     print(f"  Mode              : {protocol}")
     display_url = f"http://localhost:{port}" if "HTTP" in protocol else f"https://localhost:{port}"
@@ -4256,7 +4256,7 @@ def start_server(port: int, use_tls: bool = False, require_tls: bool = False):
     print("    POST /v1/exam/answer")
     print("    POST /v1/exam/submit")
     print("    POST /v1/exam/logs")
-    print("  Env               : VIRTUSA_PROCTOR_SECRET  DATABASE_URL  SERVER_PORT")
+    print("  Env               : OBSERVE_PROCTOR_SECRET  DATABASE_URL  SERVER_PORT")
     print("[SERVER] Press Ctrl+C to stop\n")
 
     if SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY:
@@ -4293,8 +4293,8 @@ def start_server(port: int, use_tls: bool = False, require_tls: bool = False):
 
 
 if __name__ == "__main__":
-    require_tls = os.environ.get("VIRTUSA_REQUIRE_TLS", "1").lower() in ("1", "true", "yes", "on")
-    use_tls = os.environ.get("VIRTUSA_TLS", "1").lower() in ("1", "true", "yes")
+    require_tls = os.environ.get("OBSERVE_REQUIRE_TLS", "1").lower() in ("1", "true", "yes", "on")
+    use_tls = os.environ.get("OBSERVE_TLS", "1").lower() in ("1", "true", "yes")
     if require_tls and not use_tls and not TRUST_PROXY_TLS:
-        raise RuntimeError("TLS is required in production. Set VIRTUSA_TLS=1 or disable VIRTUSA_REQUIRE_TLS explicitly.")
+        raise RuntimeError("TLS is required in production. Set OBSERVE_TLS=1 or disable OBSERVE_REQUIRE_TLS explicitly.")
     start_server(port=PORT, use_tls=use_tls, require_tls=require_tls)

@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 from urllib.parse import urlparse
 
-SERVER_URL_ENV_KEYS = ("VIRTUSA_SERVER_URL", "VIRTUSA_BACKEND_URL")
+SERVER_URL_ENV_KEYS = ("OBSERVE_SERVER_URL", "OBSERVE_BACKEND_URL")
 LIGHTNING_AI_ALLOWED_HOSTS = {
     "8080-01kj5bj93vmpxwpzf2ywa1k639.cloudspaces.litng.ai",
 }
@@ -45,7 +45,7 @@ def _validate_lightning_ai_url(url: str) -> str:
     normalized = url.rstrip("/")
     parsed = urlparse(normalized)
     if parsed.scheme.lower() != "https":
-        raise RuntimeError("Backend URL must use HTTPS in production (set VIRTUSA_SERVER_URL).")
+        raise RuntimeError("Backend URL must use HTTPS in production (set OBSERVE_SERVER_URL).")
     if parsed.username or parsed.password:
         raise RuntimeError("Backend URL must not include credentials.")
 
@@ -63,8 +63,8 @@ def get_backend_url() -> str:
     Resolve the backend URL used by the desktop client.
 
     Resolution order:
-    1) VIRTUSA_SERVER_URL  (new canonical env var)
-    2) VIRTUSA_BACKEND_URL (legacy compatibility)
+    1) OBSERVE_SERVER_URL  (new canonical env var)
+    2) OBSERVE_BACKEND_URL (legacy compatibility)
 
     Security guarantees:
     - Fail closed when no URL is configured.
@@ -75,4 +75,5 @@ def get_backend_url() -> str:
         value = (os.environ.get(key) or "").strip()
         if value:
             return _validate_lightning_ai_url(value)
-    raise RuntimeError("Missing backend URL. Set VIRTUSA_SERVER_URL for production startup.")
+    raise RuntimeError("Missing backend URL. Set OBSERVE_SERVER_URL for production startup.")
+

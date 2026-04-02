@@ -64,7 +64,7 @@ app.add_middleware(
     allow_origins=_parse_env_list(settings.ALLOWED_ORIGINS),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT"],
-    allow_headers=["Authorization", "Content-Type", "X-Session-Token", "X-Virtusa-Secret"],
+    allow_headers=["Authorization", "Content-Type", "X-Session-Token", "X-Observe-Secret"],
 )
 
 if settings.ENVIRONMENT == "production":
@@ -160,3 +160,4 @@ async def health():
         "version": "2.0-stateless",
         "uptime": "stateless (no db)",
     }
+

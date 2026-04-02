@@ -228,7 +228,7 @@ If the file is missing, create it from `Core_Backend_Services/LLM_Morphing_Servi
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- Core_Backend_Services/
 |  |- JIT_Generator_Service/
 |  |- LLM_Morphing_Service/     <-- current service
@@ -240,3 +240,4 @@ virtusa-github/
 |- EXE-Application/
 |- observe/
 ```
+

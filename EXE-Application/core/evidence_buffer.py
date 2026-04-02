@@ -44,9 +44,9 @@ MIN_WARNING_CAPTURE_INTERVAL_SEC = 0.75  # Throttle burst warning capture dispat
 
 def _get_shared_secret() -> bytes:
     """Return HMAC signing secret from environment configuration."""
-    secret = (os.environ.get("VIRTUSA_PROCTOR_SECRET") or "").strip()
+    secret = (os.environ.get("OBSERVE_PROCTOR_SECRET") or "").strip()
     if not secret:
-        print("[EvidenceBuffer] ⚠ WARNING: VIRTUSA_PROCTOR_SECRET not set, signature verification will fail!")
+        print("[EvidenceBuffer] ⚠ WARNING: OBSERVE_PROCTOR_SECRET not set, signature verification will fail!")
         secret = "dev-shared-secret-change-me"  # Fallback for testing
     return secret.encode("utf-8")
 
@@ -462,8 +462,8 @@ class EvidenceFrameBuffer:
 
             headers = {
                 "Content-Type": "application/json",
-                "User-Agent": "VirtusaProctor/2.0",
-                "X-Virtusa-Signature": signature,
+                "User-Agent": "ObserveProctor/2.0",
+                "X-Observe-Signature": signature,
             }
 
             url = f"{self._backend_url}/v1/evidence/save-frames"
@@ -511,3 +511,4 @@ class EvidenceFrameBuffer:
             print(f"[EvidenceBuffer] ❌ Upload error: {type(e).__name__}: {e}")
             traceback.print_exc()
             return False
+

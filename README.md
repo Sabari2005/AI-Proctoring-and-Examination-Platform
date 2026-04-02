@@ -165,8 +165,8 @@ Key role in architecture:
 ## Data and Integration Boundaries
 
 ### Shared Data Stores
-- PostgreSQL (primary relational domain data) Deployed in Neon DB 
-- Supabase Storage (documents, evidence, report artifacts)
+- PostgreSQL (primary relational domain data) Deployed in **Neon DB**
+- **Supabase Storage** (documents, evidence, report artifacts)
 
 ### LLM Providers
 - Groq (primary for generation/summarization)
@@ -210,7 +210,7 @@ Adjust ports as needed when running multiple services together.
 ## Folder Tree (High Level)
 
 ```text
-virtusa-github/
+observe-github/
 |- Web_Server/
 |- observe/
 |- EXE-Application/

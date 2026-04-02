@@ -246,7 +246,7 @@ If the file is missing, create it from `Rendering_service/report_agent/.env.exam
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- Rendering_service/
 |  |- report_agent/             <-- current service runtime folder
 |- Web_Server/
@@ -258,3 +258,4 @@ virtusa-github/
 |- EXE-Application/
 |- observe/
 ```
+

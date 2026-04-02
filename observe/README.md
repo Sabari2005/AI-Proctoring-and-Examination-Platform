@@ -207,7 +207,7 @@ Test-Path "observe/.env.local"
 ## Repository Structure (Workspace Context)
 
 ```text
-virtusa-github/
+observe-github/
 |- observe/                     <-- current service
 |- Web_Server/
 |- Coding_Environment_Service/
@@ -219,4 +219,5 @@ virtusa-github/
 |- Report_Generation_service/
 |- EXE-Application/
 ```
+
 

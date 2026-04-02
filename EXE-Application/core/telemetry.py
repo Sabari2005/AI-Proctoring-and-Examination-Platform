@@ -44,10 +44,10 @@ def _sha256_hex(data: bytes) -> str:
 
 def _default_secret() -> bytes:
     """Load and validate shared HMAC secret from environment."""
-    raw = (os.environ.get("VIRTUSA_PROCTOR_SECRET") or "").strip()
+    raw = (os.environ.get("OBSERVE_PROCTOR_SECRET") or "").strip()
     if not raw or raw == "dev-shared-secret-change-me" or len(raw) < 24:
         raise RuntimeError(
-            "Invalid VIRTUSA_PROCTOR_SECRET. Configure a strong production secret (min 24 chars)."
+            "Invalid OBSERVE_PROCTOR_SECRET. Configure a strong production secret (min 24 chars)."
         )
     return raw.encode("utf-8")
 
@@ -104,7 +104,7 @@ class TelemetryClient:
         self._state_lock = threading.RLock()
 
         # Optional certificate pin: SHA-256 of leaf certificate DER bytes.
-        self._pinned_cert_sha256 = os.environ.get("VIRTUSA_TLS_PIN_SHA256", "").strip().lower()
+        self._pinned_cert_sha256 = os.environ.get("OBSERVE_TLS_PIN_SHA256", "").strip().lower()
 
     @property
     def session_nonce(self) -> Optional[str]:
@@ -160,7 +160,7 @@ class TelemetryClient:
         headers = {
             "Content-Type": "application/json",
             "User-Agent": "ObserveProctorTelemetry/2.0",
-            "X-Virtusa-Signature": self._sign(body),
+            "X-Observe-Signature": self._sign(body),
         }
 
         ctx = _tls_context()
@@ -305,3 +305,4 @@ class TelemetryClient:
                 "error": "unexpected_error",
                 "server_decision": {"is_safe": False, "action": "block"},
             }
+
